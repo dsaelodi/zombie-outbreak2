@@ -154,6 +154,6 @@ src/
 
 Browsers require **HTTPS** (or `localhost`) for `navigator.mediaDevices.getUserMedia`.
 
-1. Run `npm run build`.
+1. Run `bun run build`.
 2. Deploy the generated `dist/` directory to any HTTPS static host (Cloudflare Pages, Firebase Hosting, Netlify, Vercel, GitHub Pages, or Nginx with TLS).
 3. Verify `/models/pose_landmarker_lite.task`, `/wasm/*`, and `/assets/audio/*.ogg` are served with standard MIME types (`application/wasm`, `audio/ogg`).
