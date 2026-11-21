@@ -1,0 +1,998 @@
+# DEVELOPMENT UPDATE — STORY MODE & FINAL POLISH
+## Zombie Survival FPS | Environmental Detail, Cinematic Storytelling & Boss Phase Fix
+
+### 1. DEVELOPMENT OBJECTIVE
+
+Act as a Senior Game Developer, Level Designer, Cinematic Director, 3D Environment Artist, Gameplay Programmer, and Technical Animator.
+
+Improve the existing four-stage zombie survival game with the following objectives:
+
+1. Improve environmental details in villages, cities, laboratories, and other locations.
+2. Populate empty laboratory containment tubes with human test subjects.
+3. Fix the Stage 4 boss phase transition bug.
+4. Add an actual animated opening sequence to the final arena exit gate.
+5. Introduce a cinematic story introduction when starting the campaign.
+6. Add a pre-invasion cinematic scene at the beginning of every stage.
+7. Add narrative explanations and story progression similar to a story-driven survival game.
+8. Redesign the home screen showcase to feature both Boss Phase 1 and Phase 2 waiting aggressively inside the arena.
+
+IMPORTANT:
+This is an incremental update to the existing project.
+
+Preserve existing gameplay functionality, automatic player movement, gesture controls, weapons, zombie systems, four-stage campaign, and cinematic transitions.
+
+Inspect the existing codebase before making changes.
+
+---
+
+# 2. MAP ENVIRONMENT DETAILING
+
+The current village, city, and laboratory environments still look too empty and simplistic.
+
+Improve environmental detail across all existing maps.
+
+The goal is to create believable abandoned locations with environmental storytelling.
+
+Do not simply add random decorative objects.
+
+Every environment should have a coherent visual identity.
+
+### 2.1 Village Environment — Stage 1
+
+Improve the abandoned village.
+
+Add environmental details such as:
+
+- More detailed house exteriors.
+- Different building structures.
+- Wooden fences.
+- Broken windows.
+- Damaged roofs.
+- Abandoned motorcycles and vehicles.
+- Electricity poles and hanging cables.
+- Broken streetlights.
+- Roadside objects.
+- Abandoned food stalls.
+- Damaged signs.
+- Scattered furniture.
+- Abandoned household objects.
+- Garbage and debris.
+- Damaged walls.
+- Blood stains.
+- Broken barricades.
+- Overgrown vegetation.
+- Cobwebs inside abandoned buildings.
+
+Add evidence that residents escaped suddenly.
+
+Examples:
+- Open doors.
+- Suitcases abandoned outside houses.
+- Toys left behind.
+- Tables with unfinished meals.
+- Abandoned bicycles.
+- Cars with open doors.
+- Personal belongings scattered across the road.
+
+The village should feel lived-in before the outbreak and abandoned afterward.
+
+### 2.2 City Environment
+
+Improve all existing urban sections.
+
+Add:
+- More detailed building facades.
+- Storefronts.
+- Broken advertisements.
+- Street signs.
+- Damaged traffic lights.
+- Abandoned cars.
+- Burned vehicles.
+- Electricity cables.
+- Street debris.
+- Broken glass.
+- Damaged bus stops.
+- Road markings.
+- Cracked pavement.
+- Environmental blood stains.
+- Abandoned shopping carts.
+- Fallen street objects.
+
+Create variation between urban blocks.
+
+Do not repeat the same building or street asset everywhere.
+
+### 2.3 Laboratory Environment — Stage 2 and Stage 3
+
+The laboratory currently contains empty glass containment tubes.
+
+This must be corrected.
+
+IMPORTANT REQUIREMENT:
+
+Every important laboratory containment tube that is supposed to hold a specimen must actually contain a human test subject.
+
+Do not leave these tubes empty.
+
+### Human Test Subjects Inside Tubes
+
+Add basic human character models inside the glass containment tubes.
+
+The subjects should be:
+
+- Human-shaped.
+- Anatomically recognizable.
+- Unmutated or still in their original human form.
+- Wearing simple hospital or experimental patient clothing.
+- In a neutral suspended or standing position.
+- Visually consistent with experimental subjects.
+
+Do not make all subjects look like advanced monsters.
+
+These are ordinary human subjects before or during the early experimentation process.
+
+Use simple but convincing character models.
+
+Add variation:
+- Different body positions.
+- Different subjects.
+- Different tube sizes where appropriate.
+- Different containment states.
+
+Some tubes may contain early experimental subjects, while others can contain damaged or inactive specimens where story progression justifies it.
+
+### Containment Tube Details
+
+Each important tube should have:
+- Glass surfaces.
+- Metal support structures.
+- Connecting pipes.
+- Mechanical cables.
+- Laboratory labels.
+- Warning indicators.
+- Fluid or containment effects where appropriate.
+- Subtle internal lighting.
+- Appropriate environmental reflections.
+
+Add small bubbles or movement in containment fluid when supported.
+
+Do not make the subjects excessively complicated or visually distracting.
+
+The primary requirement is that laboratory tubes no longer appear empty.
+
+### 2.4 Additional Laboratory Details
+
+Improve the laboratory with:
+- Workstations.
+- Medical equipment.
+- Research monitors.
+- Computer terminals.
+- Hanging cables.
+- Broken machinery.
+- Damaged observation windows.
+- Laboratory instruments.
+- Specimen storage areas.
+- Abandoned medical beds.
+- Research documents.
+- Warning signs.
+- Emergency lighting.
+- Damaged security panels.
+
+Add environmental evidence that scientists were working on human experimentation.
+
+### 2.5 Environment Quality Rules
+
+The goal is MODERATE-TO-HIGH ENVIRONMENT DETAIL.
+
+Do not overpopulate maps.
+
+Requirements:
+- Avoid large empty areas without purpose.
+- Maintain clear navigation paths.
+- Keep combat areas readable.
+- Preserve zombie navigation and collision.
+- Avoid decorative objects blocking the automatic player route.
+- Use varied assets and material details.
+- Avoid repeating the same props excessively.
+
+The environments should no longer look like empty prototype maps.
+
+---
+
+# 3. CRITICAL BUG FIX — BOSS PHASE TRANSITION
+
+This is a critical gameplay bug and must be fixed before additional visual features.
+
+CURRENT PROBLEM:
+
+When the player shoots Boss Phase 1, the boss sometimes immediately switches to Phase 2 instead of requiring Phase 1 to be defeated first.
+
+This behavior must be corrected.
+
+### 3.1 Sequential Boss Phase Architecture
+
+Use a dedicated state machine for boss progression.
+
+The boss must progress sequentially:
+
+PHASE 1 → PHASE 2 → PHASE 3 → FINAL PHASE → BOSS DEFEATED.
+
+Every phase must be completed before the next phase becomes active.
+
+Do not use the previous shared cumulative-health threshold system that triggers Phase 2 at 70% of a combined health bar.
+
+Replace that logic with independent phase health pools.
+
+### 3.2 Independent Phase Health
+
+Each phase must have its own full health pool.
+
+Example:
+
+- Phase 1: 100% phase-specific health.
+- Phase 2: 100% phase-specific health.
+- Phase 3: 100% phase-specific health.
+- Final Phase: 100% phase-specific health.
+
+The exact maximum health values should remain configurable.
+
+### 3.3 Correct Phase 1 Behavior
+
+When Phase 1 begins:
+
+- Only Phase 1 damage logic is active.
+- The Phase 1 health bar is visible.
+- Player attacks reduce Phase 1 health.
+- The boss retains its Phase 1 model and animation.
+- Phase 2 logic remains completely disabled.
+
+When Phase 1 health reaches zero:
+
+1. Clamp Phase 1 health to zero.
+2. Disable further Phase 1 damage.
+3. Disable Phase 1 attack behavior.
+4. Stop active Phase 1 combat logic.
+5. Trigger the Phase 1 defeat or transformation animation.
+6. Play the appropriate transition sound.
+7. Complete the transition cinematic.
+8. Activate Phase 2.
+9. Initialize Phase 2 with its own full health.
+10. Display the Phase 2 health bar.
+
+Phase 2 must NOT appear before Phase 1 is completely defeated.
+
+### 3.4 Damage Protection During Transitions
+
+During every phase transition:
+
+- Disable boss damage registration.
+- Ignore or safely discard incoming damage events.
+- Do not carry over excess damage from the previous phase.
+- Prevent attacks from triggering the next phase prematurely.
+- Do not allow multiple phase transitions to execute simultaneously.
+
+Example:
+
+If a powerful grenade defeats Phase 1, the remaining explosion damage must not instantly damage or kill Phase 2.
+
+The next phase must begin with its full configured health.
+
+### 3.5 Phase State Machine
+
+Implement explicit states:
+
+- PHASE_1_ACTIVE
+- PHASE_1_DEFEATED
+- TRANSITION_TO_PHASE_2
+- PHASE_2_ACTIVE
+- PHASE_2_DEFEATED
+- TRANSITION_TO_PHASE_3
+- PHASE_3_ACTIVE
+- PHASE_3_DEFEATED
+- TRANSITION_TO_FINAL_PHASE
+- FINAL_PHASE_ACTIVE
+- BOSS_DEFEATED
+- BOSS_DEATH_CINEMATIC
+
+Every transition must have a valid condition.
+
+The system must never skip a state.
+
+### 3.6 Important Edge Cases
+
+Test:
+- AR continuous firing during the transition.
+- SMG continuous firing during the transition.
+- Flamethrower continuous damage.
+- Grenade explosions during phase completion.
+- Multiple bullets hitting simultaneously.
+- Boss reaching zero health from an area attack.
+- Player continuing to fire during cinematic sequences.
+- Boss taking damage while its model is changing.
+
+Only the currently active phase may receive valid damage.
+
+### 3.7 Health Bar Accuracy
+
+The health bar must represent the actual active phase.
+
+When transitioning:
+- Hide the old phase health bar.
+- Show the new phase health bar after activation.
+- Reset the new phase bar to full.
+- Update the phase title.
+- Avoid displaying misleading health values.
+
+The system must be event-driven and must not depend on fragile UI animation timing.
+
+This bug fix takes priority over all other boss-related visual changes.
+
+---
+
+# 4. FINAL ARENA EXIT GATE — ACTUAL OPENING ANIMATION
+
+The existing ending sequence needs improvement.
+
+When the player completes the campaign and reaches the final arena exit gate, the gate must actually open through a visible animation.
+
+Do not simply teleport the player outside or instantly change the gate state.
+
+### 4.1 Gate Opening Sequence
+
+After the final boss is defeated and the spectator zombies have collapsed:
+
+1. The player automatically walks toward the large exit gate.
+2. The player approaches the designated stopping point.
+3. The camera focuses briefly on the gate.
+4. A mechanical sound begins.
+5. The gate starts unlocking.
+6. Chains and mechanical components move.
+7. The gate slowly opens.
+8. Dust falls from the surrounding structure.
+9. Metal creaking and heavy mechanical sounds play.
+10. Light from the outside environment becomes visible.
+11. The gate reaches its fully open position.
+12. The player automatically continues walking through the entrance.
+
+### 4.2 Physical Animation
+
+The gate must have real movement.
+
+Depending on the existing model:
+- Metal doors rotate around hinges.
+- Sliding doors move along tracks.
+- Mechanical supports move appropriately.
+- Chains and handles animate.
+- Gate components remain physically aligned.
+
+Avoid moving the entire gate model without animating its individual mechanical behavior when the model supports it.
+
+### 4.3 Cinematic Presentation
+
+Use:
+- Slow camera movement.
+- Heavy mechanical sound.
+- Subtle camera shake.
+- Falling dust.
+- Environmental lighting changes.
+- Exterior visibility reveal.
+
+Do not immediately fade to black when the gate begins opening.
+
+The player must be able to see the gate opening.
+
+The automatic movement system must wait until the gate has reached a safe and fully open position.
+
+Then resume player movement.
+
+---
+
+# 5. MAIN GAME INTRODUCTION — STORY MODE
+
+Add a proper cinematic story introduction when the player begins a new campaign.
+
+The game should not immediately start with gameplay.
+
+Introduce the world, the outbreak, and the mystery surrounding Subject Alpha.
+
+The introduction must feel like the opening of a story-driven horror survival game.
+
+### 5.1 Opening Story Cinematic
+
+Create an opening cinematic sequence before Stage 1 gameplay.
+
+Suggested sequence:
+
+SHOT 1 — NORMAL WORLD
+
+Show a peaceful world before the infection.
+
+Display:
+- Ordinary village life.
+- People walking.
+- Vehicles moving.
+- Buildings operating normally.
+- Scientists conducting research in a distant facility.
+
+SHOT 2 — SECRET EXPERIMENT
+
+Show an underground research facility.
+
+Scientists are observing Subject Alpha inside an experimental containment tube.
+
+Research equipment operates normally.
+
+Display subtle warning signs that the experiment is not entirely safe.
+
+SHOT 3 — THE FIRST FAILURE
+
+The containment system begins failing.
+
+Lights flicker.
+
+Scientists react to abnormal readings.
+
+Emergency warnings begin.
+
+SHOT 4 — OUTBREAK
+
+A containment breach occurs.
+
+The facility loses control.
+
+Do not fully reveal the final boss.
+
+Show fragmented views of the early infection and the first signs of a spreading outbreak.
+
+SHOT 5 — THE WORLD CHANGES
+
+Show brief scenes of:
+- Abandoned roads.
+- Emergency vehicles.
+- People escaping.
+- Empty streets.
+- Early signs of the zombie outbreak.
+
+SHOT 6 — TITLE REVEAL
+
+Display the game title.
+
+Transition into Stage 1.
+
+### 5.2 Story Narration
+
+Include story explanations through:
+- Subtitle narration.
+- Short cinematic text.
+- Environmental visuals.
+- Optional voice-over where assets are available.
+
+The player must understand:
+
+- An experimental research project existed.
+- Subject Alpha was the original human subject.
+- The experiment eventually failed.
+- The infection spread beyond the facility.
+- The identity of the final King remains a mystery at the beginning.
+
+Do not reveal all story secrets in the opening cinematic.
+
+Use gradual storytelling across the four stages.
+
+### 5.3 Story Mode Presentation
+
+When starting a new campaign:
+
+- Play the opening story cinematic.
+- Introduce the campaign objective.
+- Display Stage 1 title.
+- Begin the first stage introduction.
+- Transition into actual gameplay.
+
+Allow cinematic skipping after a brief initial presentation.
+
+Provide subtitles even if voice-over is unavailable.
+
+---
+
+# 6. PRE-INVASION CINEMATIC FOR EVERY STAGE
+
+Every stage must have its own cinematic introduction.
+
+IMPORTANT REQUIREMENT:
+
+At the beginning of each stage, show the environment BEFORE the zombie invasion reached that location.
+
+The player should see how the location looked when it was still functioning normally.
+
+Then transition into the current abandoned and infected version.
+
+These scenes must provide context, atmosphere, and story explanations.
+
+### STAGE 1 — ABANDONED VILLAGE
+PRE-INVASION SCENE
+
+Show the village before the outbreak.
+
+Visual sequence:
+- People walking along the road.
+- Children playing.
+- Residents opening their houses.
+- Vehicles passing.
+- Small roadside activities.
+- Normal village atmosphere.
+
+Gradually introduce:
+- A strange emergency broadcast.
+- People becoming confused.
+- A distant siren.
+- The first infected individual.
+- Residents beginning to flee.
+- Cars abandoning the road.
+
+Finish with a visual transition into the present-day abandoned village.
+
+Display:
+
+STAGE 1 — ABANDONED VILLAGE
+
+"The outbreak began in an ordinary place. By the time anyone understood what was happening, the village was already lost."
+
+Then begin automatic player movement.
+
+### STAGE 2 — CURSED FOREST
+PRE-INVASION SCENE
+
+Show the forest research project before the outbreak.
+
+Visual sequence:
+- Scientists arriving at the research site.
+- Researchers transporting equipment.
+- A small laboratory operating normally.
+- Experimental procedures being prepared.
+- Staff observing Subject Alpha research records.
+- Early warning signs appearing.
+
+Gradually reveal that the forest facility was involved in the original experimentation.
+
+Show the first signs of containment instability.
+
+Then transition into the current abandoned forest.
+
+Display:
+
+STAGE 2 — CURSED FOREST
+
+"The first experiments were conducted far from civilization. What was meant to remain hidden would soon become impossible to contain."
+
+Begin automatic player movement.
+
+### STAGE 3 — UNDERGROUND FACILITY
+PRE-INVASION SCENE
+
+Show the underground facility before its collapse.
+
+Visual sequence:
+- Scientists walking through operational corridors.
+- Laboratory staff monitoring containment tubes.
+- Researchers discussing Subject Alpha.
+- Security officers guarding experimental areas.
+- Active computers and monitoring screens.
+- Subject Alpha inside a containment chamber.
+
+Gradually introduce:
+- Unusual biological readings.
+- Containment alarms.
+- Flickering lights.
+- Abnormal movement inside the main experimental tube.
+- Emergency security activation.
+- Staff evacuation.
+
+End by revealing the facility in its destroyed present-day condition.
+
+Display:
+
+STAGE 3 — UNDERGROUND FACILITY
+
+"Subject Alpha was once human. The experiments changed everything, and the people who created it never escaped."
+
+Begin automatic player movement.
+
+### STAGE 4 — THE ARENA OF THE DEAD
+PRE-INVASION SCENE
+
+Show the arena before it became the Kingdom of the Undead.
+
+Establish that this was originally a large experimental containment or testing arena.
+
+Visual sequence:
+- Arena structures still operational.
+- Security personnel monitoring the arena.
+- Large containment gates.
+- Scientists preparing a controlled observation.
+- The arena floor initially empty.
+- Subject Alpha being transported toward the arena.
+
+Gradually reveal:
+- Containment systems failing.
+- Emergency lights activating.
+- Security doors opening.
+- The first infected subjects appearing.
+- The arena becoming overrun.
+- The emergence of The King as the ruler of the infected.
+
+Finish by transitioning into the present-day arena, with the zombie spectators occupying the stands.
+
+Display:
+
+STAGE 4 — THE ARENA OF THE DEAD
+
+"The experiment created something that no one could control. The infected no longer had a leader. They had a king."
+
+Then start the actual boss introduction cinematic.
+
+---
+
+# 7. STORY MODE UI AND NARRATIVE PRESENTATION
+
+Introduce a consistent story presentation system.
+
+Every stage introduction must display:
+
+- Stage number.
+- Stage name.
+- Short story description.
+- Relevant objective.
+- Optional subtitle narration.
+
+Use cinematic typography and subtle animation.
+
+Suggested presentation:
+
+STAGE 1
+
+THE ABANDONED VILLAGE
+
+"The beginning of the outbreak."
+
+OBJECTIVE:
+Investigate the abandoned village.
+
+The text should appear after the environment has been introduced.
+
+### Narrative Consistency
+
+The story must progress logically.
+
+The player should gradually discover:
+- The existence of the research project.
+- The identity of Subject Alpha.
+- The experiments that transformed the subject.
+- The facility's containment failure.
+- The origin of the zombie hierarchy.
+- The rise of the King.
+
+Do not expose the complete ending during the first introduction.
+
+Use environmental documents and visual clues to support the cinematic storytelling.
+
+### Scene Timing
+
+Suggested durations:
+- Main opening cinematic: 25–40 seconds.
+- Stage introduction: 10–20 seconds.
+- Short story explanation: 3–8 seconds.
+
+Durations must be configurable.
+
+Allow the player to skip cinematic sequences after a brief presentation period.
+
+Skipping must not skip mandatory gameplay progression or break scene state.
+
+---
+
+# 8. HOME SCREEN — BOSS PHASE 1 & PHASE 2 SHOWCASE
+
+Replace the existing home screen background animation.
+
+The new background should take place inside the actual Stage 4 boss arena.
+
+Show BOTH Boss Phase 1 and Boss Phase 2 as visual showcase representations.
+
+They should appear to be waiting in the arena, impatient, aggressive, and visibly angry.
+
+IMPORTANT:
+The home screen uses independent showcase instances.
+
+They must not trigger the actual boss combat system or modify the campaign boss state.
+
+### 8.1 Showcase Composition
+
+Create a dramatic arena background.
+
+Include:
+- Circular arena.
+- Dark spectator stands.
+- Fire.
+- Smoke.
+- Red environmental lighting.
+- Damaged structures.
+- Atmospheric particles.
+- Zombie audience silhouettes where appropriate.
+
+### 8.2 Phase 1 Boss Showcase
+
+Position the Phase 1 representation in a visible area of the arena.
+
+Behavior:
+- Heavy breathing.
+- Slow aggressive movement.
+- Clenching its hands.
+- Stomping the ground.
+- Occasional growling.
+- Turning its head toward the camera.
+- Slamming its weapon or mutated limbs into the ground.
+
+It should appear impatient and angry, as if waiting for the player to enter the arena.
+
+### 8.3 Phase 2 Boss Showcase
+
+Position the Phase 2 representation in another visible section of the arena.
+
+Behavior:
+- More aggressive idle movement.
+- Repeated growling.
+- Short aggressive lunges within its showcase area.
+- Heavy breathing.
+- Claw movements.
+- Stomping.
+- Brief roars.
+- Aggressive posture.
+
+Make its behavior visibly more dangerous than Phase 1.
+
+### 8.4 Showcase Animation Cycle
+
+Create a seamless background animation cycle.
+
+Suggested sequence:
+
+1. Wide shot of the empty arena.
+2. Reveal Phase 1 boss waiting in the center.
+3. Show Phase 2 boss in a separate arena position.
+4. Phase 1 boss growls and stomps.
+5. Phase 2 boss makes an aggressive movement.
+6. Camera slowly moves closer to both.
+7. One boss roars.
+8. Return to the wide shot.
+
+The two boss representations should feel impatient and hostile.
+
+They should look like powerful opponents waiting for the player to enter their domain.
+
+### 8.5 Home Screen UI
+
+Preserve the previously requested minimal horror menu.
+
+Maintain:
+- Simple PLAY button.
+- Settings.
+- How to Play.
+- Credits.
+- Horror typography.
+- Dark blood-stained theme.
+
+The bosses must remain background showcases.
+
+Do not obscure the main menu.
+
+Ensure the home screen remains responsive and does not trigger actual combat logic.
+
+---
+
+# 9. TECHNICAL IMPLEMENTATION AND PERFORMANCE
+
+Before implementing this update:
+
+Inspect:
+- Existing stage environment files.
+- Village and city assets.
+- Laboratory scene objects.
+- Existing containment tubes.
+- Subject Alpha model and records.
+- Boss phase controller.
+- Boss health calculations.
+- Damage registration.
+- Final arena exit gate.
+- Campaign start logic.
+- Scene transition architecture.
+- Home screen showcase controller.
+
+Use existing assets where practical.
+
+Do not create duplicate systems unnecessarily.
+
+### Suggested Systems
+
+- EnvironmentDetailManager
+- LaboratorySubjectManager
+- StoryCampaignController
+- OpeningCinematicController
+- StageIntroController
+- StoryNarrationController
+- BossPhaseStateMachine
+- BossDamageController
+- ArenaExitGateController
+- HomeScreenBossShowcaseController
+
+Adapt system names to the current codebase.
+
+### Performance Requirements
+
+- Optimize added environmental props.
+- Reuse materials.
+- Use instanced assets where appropriate.
+- Avoid excessive transparent objects.
+- Optimize glass tube rendering.
+- Avoid redundant light sources.
+- Reuse human subject models.
+- Clean up cinematic-only scene objects.
+- Preload required assets before stage transitions.
+- Prevent duplicate animation loops.
+
+Target smooth browser performance.
+
+The new details must improve the world without creating unnecessary FPS drops.
+
+---
+
+# 10. IMPLEMENTATION PRIORITIES
+
+Implement in this order:
+
+### P0 — Boss Phase Bug
+- Replace cumulative phase threshold logic.
+- Implement separate phase health pools.
+- Implement sequential phase state machine.
+- Prevent damage carryover.
+- Test grenade and continuous weapon damage.
+- Verify all four phases.
+
+### P1 — Map Environment Detail
+- Populate empty laboratory tubes with human subjects.
+- Improve laboratory equipment.
+- Improve village details.
+- Improve city details.
+- Remove visually empty prototype areas.
+- Preserve navigation.
+
+### P2 — Story Opening
+- Create main game opening cinematic.
+- Introduce Subject Alpha.
+- Show the beginning of the outbreak.
+- Add narrative subtitles.
+- Transition into Stage 1.
+
+### P3 — Stage Intro Cinematics
+- Stage 1 pre-invasion sequence.
+- Stage 2 pre-invasion sequence.
+- Stage 3 pre-invasion sequence.
+- Stage 4 pre-invasion sequence.
+- Integrate stage title cards and objectives.
+
+### P4 — Final Arena Gate
+- Animate mechanical opening.
+- Add synchronized sounds.
+- Add environmental effects.
+- Coordinate automatic player movement.
+
+### P5 — Home Screen Boss Showcase
+- Use Phase 1 showcase model.
+- Use Phase 2 showcase model.
+- Add angry idle animations.
+- Add camera sequence.
+- Integrate arena atmosphere.
+
+### P6 — Testing
+- Test new campaign start.
+- Test all stage intros.
+- Test stage progression.
+- Test boss phase progression.
+- Test arena exit.
+- Test home screen.
+- Test performance.
+
+---
+
+# 11. ACCEPTANCE CRITERIA
+
+### Maps
+- [ ] Laboratory tubes contain visible human test subjects.
+- [ ] Subjects look like basic, unmutated human experimental subjects.
+- [ ] Tube equipment has appropriate details.
+- [ ] Village has significantly more environmental detail.
+- [ ] City sections have significantly more environmental detail.
+- [ ] No important navigation paths are obstructed.
+- [ ] Environments maintain their distinct visual identities.
+
+### Boss Phase Bug
+- [ ] Phase 1 must reach zero health before Phase 2 appears.
+- [ ] Phase 2 has a separate full health pool.
+- [ ] Phase 3 has a separate full health pool.
+- [ ] Final Phase has a separate full health pool.
+- [ ] No damage carries over between phases.
+- [ ] Grenade damage cannot skip a phase.
+- [ ] Continuous firing cannot trigger multiple transitions.
+- [ ] Boss transitions execute exactly once.
+
+### Final Exit Gate
+- [ ] Player approaches automatically.
+- [ ] Gate unlocks.
+- [ ] Gate physically opens through animation.
+- [ ] Mechanical audio is synchronized.
+- [ ] Dust and lighting effects appear.
+- [ ] Player only proceeds after the gate is open.
+
+### Story Mode
+- [ ] Campaign opening cinematic plays.
+- [ ] Subject Alpha is introduced.
+- [ ] The original outbreak is explained.
+- [ ] Every stage has its own pre-invasion cinematic.
+- [ ] Each stage includes an explanation.
+- [ ] Stage titles and objectives appear.
+- [ ] Cinematics transition correctly into gameplay.
+- [ ] Skipping does not break progression.
+
+### Home Screen
+- [ ] Stage 4 arena appears in the background.
+- [ ] Phase 1 boss representation is visible.
+- [ ] Phase 2 boss representation is visible.
+- [ ] Both have aggressive waiting animations.
+- [ ] Both have distinct behavior.
+- [ ] They do not trigger actual combat logic.
+- [ ] Main menu remains readable and functional.
+
+---
+
+# 12. FINAL DEVELOPMENT INSTRUCTIONS
+
+Do not implement these features as disconnected cinematic mockups.
+
+All story sequences must connect to actual campaign progression.
+
+All stage transitions must preserve the automatic movement architecture.
+
+All boss phases must use real health and damage state.
+
+All containment tubes must contain appropriate subject models.
+
+The final exit gate must use an actual animation.
+
+The home screen boss showcase must use the actual boss models and animation assets in isolated showcase instances.
+
+After implementation, report:
+
+1. Modified and created files.
+2. Map detailing improvements.
+3. Human subjects added to laboratory tubes.
+4. Boss phase bug fix explanation.
+5. Story cinematic implementation.
+6. Stage introduction implementation.
+7. Exit gate animation implementation.
+8. Home screen boss showcase implementation.
+9. Testing results.
+10. Remaining bugs.
+
+Do not claim completion if a feature is only visually simulated.
+
+FINAL CREATIVE VISION:
+
+A story-driven zombie horror FPS where the player witnesses the world before the outbreak, discovers the origin of Subject Alpha, explores increasingly disturbing locations, and finally faces the King inside a massive gladiator arena.
+
+The environment must feel alive in the past and abandoned in the present.
+
+The story must be understandable through cinematic scenes, environmental storytelling, and research records.
+
+The final boss must have strict sequential phase progression.
+
+The main menu should feel as though two terrifying versions of the King are already waiting for the player inside the arena.

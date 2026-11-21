@@ -1,0 +1,1112 @@
+# MASTER DEVELOPMENT PROMPT
+# ZOMBIE OUTBREAK – BIFEST Browser Game
+
+## 1. ROLE & OBJECTIVE
+
+Act as a Senior Game Developer, Three.js Engineer, Computer Vision Engineer, and UI/UX Designer.
+
+Your task is to build a complete, playable, browser-based 3D zombie shooting game called **Zombie Outbreak**.
+
+This game will be demonstrated at a BIFEST exhibition booth. Visitors should be able to walk up to a computer, enable the webcam, use body movements to aim and shoot zombies, complete missions, and progress through multiple stages.
+
+This is not a static website or a visual prototype. Build an actual playable game with functional gameplay, computer vision controls, original sound effects, game state management, and replaceable assets.
+
+Do not stop after creating the project structure. Implement, test, debug, and complete the MVP.
+
+---
+
+# 2. PROJECT CONFIGURATION
+
+Use the following technical configuration:
+
+| Component | Technology |
+|---|---|
+| Language | TypeScript |
+| Build Tool | Vite |
+| 3D Engine | Three.js |
+| Computer Vision | MediaPipe Pose Landmarker |
+| Rendering | WebGL |
+| 3D Asset Format | GLB / glTF |
+| Audio | Web Audio API + replaceable audio files |
+| Styling | HTML + CSS |
+| Storage | LocalStorage |
+| Backend | Not required |
+
+Use Vanilla TypeScript, not React, unless the existing repository already has a framework that must be preserved.
+
+Use current stable compatible package versions. Follow the APIs of the installed versions rather than relying on outdated examples.
+
+The game must run locally with:
+
+`npm run dev`
+
+And produce a deployable production build with:
+
+`npm run build`
+
+Target platform: desktop browser, especially Chrome and Edge.
+
+---
+
+# 3. GAME CONCEPT
+
+**Game Title:** ZOMBIE OUTBREAK
+
+**Genre:** First-Person Zombie Survival Shooter
+
+**Visual Style:** Low-poly 3D
+
+**Perspective:** First Person Shooter (FPS)
+
+**Primary Controls:** Body Pose Tracking using webcam
+
+**Secondary Controls:** Mouse and keyboard fallback
+
+**Gameplay:** Mission-based wave survival
+
+The player is positioned inside an abandoned city environment during a zombie outbreak.
+
+Zombies spawn from predefined positions and approach the player. The player must aim and eliminate them using body movements.
+
+The game should feel like a small arcade survival shooter, not a complex open-world game.
+
+Keep the gameplay simple, responsive, engaging, and understandable within a few seconds.
+
+---
+
+# 4. GAME FLOW
+
+Implement the following screens and transitions.
+
+## A. Main Menu
+
+Create a polished, atmospheric zombie apocalypse main menu.
+
+Required elements:
+
+- Game logo: ZOMBIE OUTBREAK.
+- Play Game button.
+- How to Play button.
+- Settings button.
+- Credits button.
+- Background 3D environment.
+- Animated atmospheric background elements.
+- Original background ambience.
+
+The main menu should have a professional game-like appearance.
+
+Avoid generic dashboard designs.
+
+## B. Camera Setup
+
+When the player clicks Play:
+
+1. Request webcam permission.
+2. Initialize MediaPipe Pose Landmarker.
+3. Display a webcam preview.
+4. Check whether the player's body is visible.
+5. Display tracking status.
+6. Allow the player to continue to calibration.
+
+Handle camera permission denial gracefully.
+
+Provide an option to switch to mouse and keyboard controls if the camera is unavailable.
+
+## C. Calibration
+
+Create a calibration screen that explains how to use body controls.
+
+The player should:
+
+1. Stand in front of the camera.
+2. Position their upper body within the camera frame.
+3. Extend their right arm.
+4. Return their arm to a relaxed position.
+5. Confirm that aiming and shooting detection work.
+
+Calibration should establish the player's comfortable arm position and sensitivity.
+
+Provide clear visual feedback.
+
+Do not allow the mission to begin while pose tracking is unavailable or confidence is insufficient.
+
+## D. Mission Briefing
+
+Before every stage, show:
+
+- Stage number.
+- Stage name.
+- Mission description.
+- Objective.
+- Time limit, if applicable.
+- Start Mission button.
+
+## E. Gameplay
+
+The gameplay screen must contain:
+
+- Full-screen Three.js canvas.
+- First-person camera.
+- Low-poly zombie environment.
+- Weapon model or temporary 3D weapon placeholder.
+- Dynamic crosshair.
+- Player health.
+- Zombie kill counter.
+- Mission objective progress.
+- Timer when applicable.
+- Tracking status.
+- Pause button.
+
+Make the game visually immersive while keeping the interface readable.
+
+## F. Pause Screen
+
+Include:
+
+- Resume.
+- Restart Stage.
+- Controls Guide.
+- Settings.
+- Exit to Main Menu.
+
+Pausing must stop gameplay timers, zombie movement, spawning, and combat events.
+
+## G. Result Screen
+
+After a mission ends, display:
+
+- Mission completed or failed.
+- Final score.
+- Total zombies eliminated.
+- Shooting accuracy.
+- Shots fired.
+- Successful hits.
+- Stage information.
+- Next Stage button if completed.
+- Retry button.
+- Main Menu button.
+
+---
+
+# 5. COMPUTER VISION SYSTEM
+
+This is one of the most important parts of the project.
+
+Implement actual body pose tracking using:
+
+`@mediapipe/tasks-vision`
+
+Use Pose Landmarker with 33 body landmarks.
+
+Start with the Lite model for performance.
+
+Store the model locally in:
+
+`public/models/pose_landmarker_lite.task`
+
+Avoid unnecessary external runtime dependencies.
+
+## A. Landmark Detection
+
+Use the following landmarks:
+
+| Landmark | Index | Purpose |
+|---|---:|---|
+| Right Shoulder | 12 | Right arm reference |
+| Right Elbow | 14 | Shooting detection |
+| Right Wrist | 16 | Aiming |
+| Left Shoulder | 11 | Pause gesture reference |
+| Left Wrist | 15 | Pause gesture reference |
+
+Use landmark visibility or presence confidence where available.
+
+Ignore unreliable landmarks.
+
+## B. Aiming Mechanism
+
+The player's right wrist controls the crosshair position.
+
+Implementation:
+
+1. Read the right wrist position from MediaPipe.
+2. Use normalized coordinates.
+3. Apply initial calibration.
+4. Map wrist movement to screen coordinates.
+5. Apply smoothing to reduce jitter.
+6. Clamp the crosshair to the playable screen area.
+
+The crosshair must respond smoothly without excessive delay.
+
+Use adjustable sensitivity.
+
+Do not directly copy raw wrist coordinates without considering shoulder position, body movement, and camera mirroring.
+
+The preview may be mirrored for a natural user experience, but the coordinate transformation must remain consistent.
+
+## C. Shooting Mechanism
+
+Use the right arm extension gesture to trigger shooting.
+
+Calculate the angle between:
+
+- Right Shoulder.
+- Right Elbow.
+- Right Wrist.
+
+Initial thresholds:
+
+- Below 130 degrees: Arm is not extended.
+- Above 155 degrees: Shooting gesture detected.
+- Returning below 130 degrees: Player is ready to shoot again.
+
+These are configurable starting values, not permanent assumptions.
+
+Important requirements:
+
+- One arm extension should produce one shot.
+- Do not repeatedly shoot while the arm remains extended.
+- Implement cooldown and debounce.
+- Require valid landmark confidence.
+- Do not shoot when pose tracking is lost.
+- Display visual feedback when a shot is registered.
+
+Use 3D world landmarks for joint-angle calculation where practical.
+
+## D. Pause Gesture
+
+Detect both hands raised above shoulder level and held for approximately one second.
+
+Trigger pause only once per gesture.
+
+Prevent accidental repeated activation.
+
+Keep an on-screen pause button as a fallback.
+
+## E. Computer Vision Performance
+
+Implement:
+
+- Pose confidence filtering.
+- Smoothing.
+- Gesture state management.
+- Calibration.
+- Tracking-loss detection.
+- Recovery when the player returns into frame.
+- Inference throttling.
+- Separate tracking and rendering update rates.
+
+Target:
+- Rendering: approximately 60 FPS.
+- Pose inference: approximately 15–20 FPS.
+
+Do not run synchronous pose inference unnecessarily on every Three.js render frame.
+
+If inference causes significant frame drops, consider moving it to a Web Worker.
+
+Provide an optional debug mode showing landmarks, joint angles, crosshair coordinates, and tracking confidence.
+
+---
+
+# 6. GAMEPLAY AND COMBAT SYSTEM
+
+Build a functional FPS shooting system.
+
+## A. First-Person Camera
+
+Use a Three.js PerspectiveCamera.
+
+The camera represents the player's point of view.
+
+The player should see:
+
+- Environment.
+- Incoming zombies.
+- Weapon or weapon placeholder.
+- Crosshair.
+- Visual shooting effects.
+
+Implement responsive canvas resizing.
+
+## B. Weapon System
+
+Implement a simple weapon system.
+
+Features:
+
+- Weapon visible in the foreground.
+- Shooting animation or recoil.
+- Muzzle flash.
+- Shooting cooldown.
+- Gunshot sound.
+- Hit feedback.
+- Configurable fire rate.
+
+Start with one weapon.
+
+Do not spend excessive time implementing multiple weapon classes.
+
+If ammunition and reload mechanics are implemented, include an adjustable magazine size and reload action. Mouse/keyboard reload must remain available as a fallback.
+
+## C. Raycasting
+
+Use Three.js Raycaster to detect shots.
+
+The ray must originate from the camera and follow the current crosshair position.
+
+When a shot is fired:
+
+1. Convert crosshair coordinates to normalized device coordinates.
+2. Construct a ray from the camera.
+3. Check collision against zombie hitboxes.
+4. Apply damage if a zombie is hit.
+5. Update score and accuracy.
+6. Trigger appropriate visual and audio feedback.
+
+Use simplified invisible hitboxes.
+
+Do not check every detailed polygon of every zombie mesh unnecessarily.
+
+## D. Zombie AI
+
+Implement basic zombie behavior:
+
+- Idle.
+- Spawn.
+- Walk toward the player.
+- Attack when sufficiently close.
+- Receive damage.
+- Hit reaction.
+- Death.
+
+For the MVP, use simple movement and state-based AI.
+
+No advanced pathfinding or complicated physics are required.
+
+Zombies should:
+- Spawn at predefined positions.
+- Approach the player.
+- Cause damage when reaching the attack distance.
+- Have configurable health and speed.
+- Be removed or pooled after death.
+
+Create different spawn positions to avoid all zombies appearing in one location.
+
+## E. Player Health
+
+Implement a player health system.
+
+When zombies reach attack distance:
+- Trigger an attack.
+- Reduce player health.
+- Play the appropriate attack sound.
+- Show visual damage feedback.
+
+When health reaches zero, end the mission as failed.
+
+---
+
+# 7. STAGE AND MISSION SYSTEM
+
+Implement stage configuration separately from gameplay code.
+
+Use a data-driven mission system.
+
+## Stage 1: FIRST CONTACT
+
+Mission:
+Eliminate 8 zombies.
+
+Configuration:
+- No time limit.
+- Maximum 3 active zombies.
+- Spawn interval: approximately 2 seconds.
+- Basic zombie type.
+
+## Stage 2: CITY OUTBREAK
+
+Mission:
+Eliminate 15 zombies within 90 seconds.
+
+Configuration:
+- 90-second timer.
+- Maximum 5 active zombies.
+- Spawn interval: approximately 1.5 seconds.
+- Increased zombie speed.
+
+## Stage 3: LAST STAND
+
+Mission:
+Survive for 90 seconds.
+
+Configuration:
+- 90-second timer.
+- Maximum 6 active zombies.
+- Spawn interval: approximately 1.2 seconds.
+- Increased difficulty.
+
+These values must be stored in configuration files and easy to adjust.
+
+Mission success should trigger the result screen and unlock the next stage.
+
+Mission failure should provide a retry option.
+
+Make it possible to add more stages later without rewriting the mission system.
+
+---
+
+# 8. 3D GRAPHICS AND ASSETS
+
+Visual direction:
+
+**Low-poly zombie apocalypse.**
+
+The environment should look like an abandoned city.
+
+Use:
+
+- Low-poly buildings.
+- Abandoned vehicles.
+- Road barriers.
+- Street lights.
+- Destroyed urban props.
+- Atmospheric lighting.
+- Fog where appropriate.
+- Shadows where performance allows.
+
+Use a restrained color palette.
+
+Suggested atmosphere:
+- Dark gray environment.
+- Muted green.
+- Brown and dusty tones.
+- Red accents for danger.
+- Neutral lighting.
+
+Avoid excessive post-processing.
+
+## Temporary Assets
+
+Before the team's final 3D assets are ready, create temporary procedural low-poly models or primitive-based representations.
+
+The temporary zombie must have a recognizable humanoid silhouette.
+
+Do not leave the gameplay dependent on missing asset files.
+
+## Replaceable Zombie Assets
+
+The team will supply its own zombie models later.
+
+Support GLB files.
+
+Implement an asset-loading system that allows the following assets to be replaced without changing combat logic:
+
+- Basic zombie.
+- Runner zombie.
+- Boss zombie.
+- Weapon model.
+- Environment props.
+- Animations.
+
+Use GLTFLoader and AnimationMixer.
+
+Provide safe fallback behavior when a model fails to load.
+
+Expected animation names:
+
+- Idle.
+- Walk.
+- Attack.
+- Hit.
+- Death.
+
+Keep asset references in a central configuration file.
+
+---
+
+# 9. AUDIO AND SOUND DESIGN
+
+This requirement is mandatory.
+
+Do not leave the game silent or rely entirely on generic placeholder beeps.
+
+**Create original sound effects and background audio for the game.**
+
+The development team must be able to customize or replace all audio assets later without modifying gameplay logic.
+
+Use original generated or procedurally synthesized audio.
+
+Do not copy copyrighted game sounds, music, movie sound effects, or commercially licensed audio.
+
+If binary audio generation is available, create actual usable audio files such as WAV or OGG.
+
+If binary audio generation is unavailable, use Web Audio API to synthesize original audio, and provide a way to replace those sounds with external audio files later.
+
+## Required Audio Assets
+
+Create the following sound categories:
+
+### Weapon Sounds
+- Gunshot.
+- Gunshot variation.
+- Empty weapon sound, if applicable.
+- Reload sound, if applicable.
+- Weapon handling sound.
+
+### Zombie Sounds
+- Zombie idle groan.
+- Zombie walking or movement sound.
+- Zombie attack.
+- Zombie hit reaction.
+- Zombie death.
+
+### Environment Sounds
+- Abandoned city ambience.
+- Wind.
+- Distant zombie atmosphere.
+- Background atmospheric effects.
+
+### UI Sounds
+- Button click.
+- Menu selection.
+- Mission start.
+- Stage completed.
+- Mission failed.
+- Pause.
+- Resume.
+
+### Music
+- Main menu background music.
+- Gameplay background music.
+- Mission completion music.
+- Game over music.
+
+Create an original atmospheric survival-horror sound identity.
+
+Avoid excessively loud or repetitive sounds.
+
+## Audio Architecture
+
+Create:
+
+`src/audio/AudioManager.ts`
+
+`src/audio/AudioConfig.ts`
+
+`src/audio/AudioManifest.ts`
+
+`public/assets/audio/`
+
+All game events must trigger audio through AudioManager.
+
+Do not place audio playback logic directly inside zombie or UI classes.
+
+Example:
+
+`audioManager.play("gunshot")`
+
+`audioManager.play("zombie_death")`
+
+`audioManager.play("stage_complete")`
+
+Use a centralized audio manifest that maps sound identifiers to file paths.
+
+Example structure:
+
+```ts
+export const AUDIO_MANIFEST = {
+  gunshot: "/assets/audio/gunshot.ogg",
+  zombieDeath: "/assets/audio/zombie-death.ogg",
+  zombieAttack: "/assets/audio/zombie-attack.ogg",
+  menuMusic: "/assets/audio/menu-music.ogg",
+};
+```
+
+The actual manifest may use a better naming convention, but keep it centralized.
+
+## Audio Customization Requirements
+
+The team must be able to:
+
+- Replace gunshot audio.
+- Replace zombie sounds.
+- Replace background music.
+- Add new sound effects.
+- Adjust SFX volume.
+- Adjust music volume.
+- Adjust ambient volume.
+- Mute the entire game.
+- Enable or disable individual audio categories.
+
+Implement these settings in the Settings screen.
+
+Persist preferences using LocalStorage.
+
+Audio must respect browser autoplay restrictions. Initialize or resume the AudioContext after a user interaction, such as pressing Play.
+
+Implement safe fallback audio behavior if an asset cannot be loaded.
+
+Provide an AUDIO_CUSTOMIZATION.md document explaining exactly how the team can replace each sound file and modify volume settings.
+
+Also include an audio asset manifest and a list of generated sound files.
+
+---
+
+# 10. USER INTERFACE AND DESIGN
+
+Use a professional low-poly survival horror game aesthetic.
+
+The design should feel like an actual PC arcade game.
+
+Avoid:
+- Generic SaaS dashboards.
+- Excessive gradients.
+- Oversized rounded cards.
+- Unnecessary UI decorations.
+- Too many animations that interfere with gameplay.
+
+Use:
+- Strong visual hierarchy.
+- Clear typography.
+- High-contrast controls.
+- Subtle animations.
+- Dark survival-horror atmosphere.
+- Consistent button styles.
+- Readable HUD.
+
+The crosshair must be visible and responsive.
+
+The HUD should not obstruct the gameplay view.
+
+The game should support fullscreen mode.
+
+Create a simple but polished How to Play screen explaining body controls.
+
+All important instructions should be understandable without reading a long manual.
+
+---
+
+# 11. PROJECT ARCHITECTURE
+
+Use modular, maintainable TypeScript code.
+
+Suggested structure:
+
+```text
+zombie-outbreak/
+│
+├── public/
+│   ├── models/
+│   ├── assets/
+│   │   ├── zombies/
+│   │   ├── weapons/
+│   │   ├── environments/
+│   │   ├── textures/
+│   │   └── audio/
+│   └── icons/
+│
+├── src/
+│   ├── main.ts
+│   │
+│   ├── app/
+│   │   ├── AppController.ts
+│   │   ├── ScreenManager.ts
+│   │   └── GameStateMachine.ts
+│   │
+│   ├── core/
+│   │   ├── Game.ts
+│   │   ├── GameLoop.ts
+│   │   ├── GameSession.ts
+│   │   └── EventBus.ts
+│   │
+│   ├── cv/
+│   │   ├── CameraManager.ts
+│   │   ├── PoseTracker.ts
+│   │   ├── PoseController.ts
+│   │   ├── GestureRecognizer.ts
+│   │   ├── PoseCalibration.ts
+│   │   ├── LandmarkUtils.ts
+│   │   └── types.ts
+│   │
+│   ├── input/
+│   │   ├── PlayerInput.ts
+│   │   ├── PoseInputProvider.ts
+│   │   └── MouseInputProvider.ts
+│   │
+│   ├── three/
+│   │   ├── Renderer.ts
+│   │   ├── World.ts
+│   │   ├── CameraRig.ts
+│   │   ├── AssetManager.ts
+│   │   ├── entities/
+│   │   │   ├── Zombie.ts
+│   │   │   └── Weapon.ts
+│   │   └── systems/
+│   │       ├── SpawnSystem.ts
+│   │       ├── CombatSystem.ts
+│   │       ├── RaycastSystem.ts
+│   │       ├── MissionSystem.ts
+│   │       ├── ScoreSystem.ts
+│   │       └── EffectsSystem.ts
+│   │
+│   ├── audio/
+│   │   ├── AudioManager.ts
+│   │   ├── AudioConfig.ts
+│   │   └── AudioManifest.ts
+│   │
+│   ├── ui/
+│   │   ├── MainMenu.ts
+│   │   ├── CameraSetup.ts
+│   │   ├── CalibrationScreen.ts
+│   │   ├── MissionBriefing.ts
+│   │   ├── HUD.ts
+│   │   ├── PauseScreen.ts
+│   │   ├── ResultScreen.ts
+│   │   └── SettingsScreen.ts
+│   │
+│   ├── data/
+│   │   ├── stages.ts
+│   │   └── gameConfig.ts
+│   │
+│   ├── utils/
+│   │   ├── math.ts
+│   │   └── logger.ts
+│   │
+│   └── styles/
+│       ├── main.css
+│       ├── menu.css
+│       └── game.css
+│
+├── index.html
+├── package.json
+├── tsconfig.json
+├── README.md
+└── AUDIO_CUSTOMIZATION.md
+```
+
+You may adjust the folder structure when necessary, but preserve clear separation between:
+
+1. Computer vision.
+2. Input handling.
+3. Game logic.
+4. Three.js rendering.
+5. Audio.
+6. UI.
+
+Do not put the entire game inside one file.
+
+---
+
+# 12. CONFIGURATION AND CUSTOMIZATION
+
+Make commonly adjusted values configurable.
+
+Create configuration files for:
+
+### Game Configuration
+- Player health.
+- Weapon damage.
+- Shooting cooldown.
+- Weapon fire rate.
+- Aim sensitivity.
+- Zombie speed.
+- Zombie health.
+- Spawn intervals.
+- Maximum active zombies.
+
+### Pose Configuration
+- Shooting angle threshold.
+- Reset angle threshold.
+- Pose confidence threshold.
+- Aim smoothing.
+- Calibration values.
+- Pause gesture duration.
+- Cooldown.
+
+### Audio Configuration
+- SFX volume.
+- Music volume.
+- Ambient volume.
+- Audio asset paths.
+- Enable/disable categories.
+
+### Stage Configuration
+- Mission objectives.
+- Time limits.
+- Zombie spawn settings.
+- Stage difficulty.
+
+The development team should be able to tune these values without editing core gameplay classes.
+
+---
+
+# 13. PERFORMANCE AND RELIABILITY
+
+This game will run continuously at a public exhibition booth.
+
+Performance and reliability matter more than unnecessary visual complexity.
+
+Requirements:
+
+- Target approximately 60 FPS rendering.
+- Throttle pose inference independently.
+- Limit active zombie count.
+- Reuse objects where practical.
+- Dispose of Three.js geometries, materials, textures, and audio resources correctly.
+- Handle browser window resizing.
+- Handle webcam permission errors.
+- Handle temporary pose tracking loss.
+- Handle missing asset files.
+- Avoid memory leaks.
+- Avoid accumulating event listeners across game restarts.
+- Pause gameplay when the user pauses the game.
+- Handle browser tab visibility changes.
+- Provide safe game restart behavior.
+
+Create a game reset mechanism that restores the game to a clean initial state.
+
+Provide an optional debug panel displaying:
+- FPS.
+- Pose inference rate.
+- Active zombie count.
+- Tracking status.
+- Shooting events.
+- Current mission state.
+
+---
+
+# 14. EXHIBITION BOOTH EXPERIENCE
+
+Optimize the application for visitors who have never played it before.
+
+Requirements:
+
+1. The game opens directly on the main menu.
+2. The Play button starts the camera setup.
+3. Instructions are short and visual.
+4. Calibration should be easy.
+5. A typical session should last approximately 2–4 minutes.
+6. The player can finish or fail a stage.
+7. Results are displayed clearly.
+8. The player can restart quickly.
+9. Provide a fallback mouse and keyboard mode.
+10. The system should be able to reset to the main menu after a configurable inactivity period.
+
+Do not require users to create accounts or log in.
+
+No backend is necessary for the MVP.
+
+Do not upload webcam footage to external servers. Pose processing should happen locally in the browser.
+
+---
+
+# 15. IMPLEMENTATION WORKFLOW
+
+Work in the following order.
+
+## Phase 0: Foundation
+
+- Inspect the repository.
+- Check existing files and dependencies.
+- Preserve useful existing implementation.
+- Set up the project if empty.
+- Implement the main menu.
+- Initialize Three.js.
+- Build the initial low-poly FPS scene.
+
+## Phase 1: Computer Vision
+
+- Integrate MediaPipe.
+- Initialize webcam.
+- Detect body landmarks.
+- Build aim controller.
+- Build arm extension shooting detection.
+- Implement calibration.
+- Test tracking stability.
+
+## Phase 2: Combat
+
+- Implement weapon.
+- Implement crosshair.
+- Implement Raycaster.
+- Implement zombie placeholders.
+- Implement zombie movement.
+- Implement damage and death.
+- Implement score.
+
+## Phase 3: Missions
+
+- Implement stage configuration.
+- Implement mission progress.
+- Implement player health.
+- Implement timer.
+- Implement success and failure screens.
+- Implement stage progression.
+
+## Phase 4: Audio
+
+- Generate original audio assets.
+- Implement AudioManager.
+- Connect audio to gameplay events.
+- Implement volume controls.
+- Implement replaceable audio manifest.
+- Write audio customization documentation.
+
+## Phase 5: Visual Polish
+
+- Improve menu.
+- Improve HUD.
+- Improve environment.
+- Implement zombie animation.
+- Add visual effects.
+- Improve transitions.
+
+## Phase 6: Final Testing
+
+- Test all screens.
+- Test webcam.
+- Test body controls.
+- Test shooting.
+- Test zombie damage and death.
+- Test all missions.
+- Test sound effects.
+- Test restart behavior.
+- Test mouse fallback.
+- Test production build.
+
+You may adjust the implementation order where dependencies require it, but do not skip functional requirements.
+
+---
+
+# 16. ACCEPTANCE CRITERIA
+
+The project is not considered complete until the following requirements work.
+
+### Main Menu
+- [ ] Main menu loads correctly.
+- [ ] Play button works.
+- [ ] Settings work.
+- [ ] How to Play works.
+
+### Computer Vision
+- [ ] Webcam permission works.
+- [ ] MediaPipe detects body landmarks.
+- [ ] Right wrist controls the crosshair.
+- [ ] Arm extension triggers one shot.
+- [ ] Shooting cooldown works.
+- [ ] Pose tracking loss is handled.
+- [ ] Calibration works.
+- [ ] Pause gesture works.
+
+### Combat
+- [ ] Zombie spawning works.
+- [ ] Zombies approach the player.
+- [ ] Shooting detects zombie hits.
+- [ ] Zombie health works.
+- [ ] Zombie death works.
+- [ ] Score updates.
+- [ ] Player health works.
+
+### Missions
+- [ ] Stage 1 works.
+- [ ] Stage 2 works.
+- [ ] Stage 3 works.
+- [ ] Mission success works.
+- [ ] Mission failure works.
+- [ ] Stage progression works.
+- [ ] Restart works.
+
+### Audio
+- [ ] Gunshot sound works.
+- [ ] Zombie sounds work.
+- [ ] Environment ambience works.
+- [ ] Menu music works.
+- [ ] Mission result sounds work.
+- [ ] Volume settings work.
+- [ ] Audio files can be replaced without modifying gameplay classes.
+- [ ] Missing audio files do not crash the game.
+
+### Reliability
+- [ ] No critical console errors.
+- [ ] No major memory leaks during repeated sessions.
+- [ ] Webcam failure has a fallback.
+- [ ] Mouse and keyboard controls work.
+- [ ] Production build succeeds.
+
+---
+
+# 17. DOCUMENTATION AND FINAL DELIVERABLES
+
+Provide:
+
+1. Complete source code.
+2. Working browser game.
+3. Original generated or synthesized audio files.
+4. Temporary low-poly zombie and environment assets.
+5. Asset replacement documentation.
+6. AUDIO_CUSTOMIZATION.md.
+7. README.md with setup instructions.
+8. Technical architecture documentation.
+9. Configuration guide.
+10. Known limitations and testing report.
+
+README.md must explain:
+
+- How to install dependencies.
+- How to run locally.
+- How to build for production.
+- How to enable camera access.
+- How to replace zombie models.
+- How to replace weapon models.
+- How to replace audio files.
+- How to adjust gameplay and pose configuration.
+- How to deploy using static hosting with HTTPS.
+
+---
+
+# 18. DEVELOPMENT RULES
+
+Follow these rules throughout implementation:
+
+1. Build real functionality, not just visual mockups.
+2. Do not leave important buttons nonfunctional.
+3. Do not use fake Computer Vision behavior.
+4. Do not simulate successful webcam tracking with random coordinates.
+5. Do not leave placeholder audio where original sound generation is required.
+6. Do not hardcode configuration values across multiple files.
+7. Do not mix Computer Vision logic with combat logic.
+8. Do not overengineer features outside the MVP scope.
+9. Do not introduce an unnecessary backend.
+10. Use TypeScript types and meaningful error handling.
+11. Test after each major implementation phase.
+12. Fix build errors rather than hiding them.
+13. Document any feature that cannot be completed due to an actual tool or asset limitation.
+14. Never claim that a feature has been tested unless it has actually been tested.
+
+If the repository already contains code, inspect it before modifying anything.
+
+If something is ambiguous, make a reasonable engineering decision and document it. Do not stop development for minor questions.
+
+Prioritize a fully playable and stable MVP over excessive features.
+
+---
+
+# FINAL OBJECTIVE
+
+Deliver a polished, playable, low-poly FPS zombie survival game that runs entirely in the browser.
+
+A visitor should be able to:
+
+1. Open the game.
+2. Click Play.
+3. Enable their webcam.
+4. Calibrate their body position.
+5. Aim at zombies using their right wrist.
+6. Shoot by extending their right arm.
+7. Eliminate zombies.
+8. Complete missions.
+9. Progress through stages.
+10. View their final score.
+
+The game must include original sound effects, atmospheric audio, working UI, functional gameplay, and customizable assets.
+
+**Start by inspecting the repository and implementing the project. Do not respond with another roadmap or a theoretical explanation. Write the code, run the application, test the implementation, and deliver the working MVP.**

@@ -1,0 +1,6 @@
+{
+  "name": "ZOMBIE OUTBREAK",
+  "description": "First-person 3D zombie survival shooter with webcam body-pose aiming and shooting controls.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

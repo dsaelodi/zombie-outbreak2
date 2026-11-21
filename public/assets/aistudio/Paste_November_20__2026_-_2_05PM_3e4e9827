@@ -1,0 +1,961 @@
+# DEVELOPMENT UPDATE 2
+## Zombie Survival FPS — Cinematic, Dual-Hand Controls & Horror Immersion
+
+### 1. DEVELOPMENT OBJECTIVE
+
+Act as a Senior Game Developer, 3D Gameplay Programmer, Animation Director, Sound Designer, and Horror Game Designer.
+
+Upgrade the existing zombie survival FPS with the following improvements:
+
+1. Cinematic multi-angle boss death sequence.
+2. Dual-hand gesture-based weapon selection.
+3. More frightening normal zombie character models.
+4. Improved weapon reload animations.
+5. More realistic and detailed sound design.
+6. Horror background music and environmental audio.
+7. More detailed, atmospheric, and frightening stage environments.
+8. Complete home screen visual refinement with zombie showcases.
+
+IMPORTANT:
+This is an incremental update to the existing game.
+
+Do not rebuild the entire project or remove functional systems.
+
+Preserve:
+- Four-stage campaign.
+- Existing FPS gameplay.
+- Existing weapon wheel.
+- AR, SMG, Flamethrower, and Grenade.
+- Zombie weakness and damage systems.
+- Boss combat mechanics.
+- Existing hand-tracking architecture.
+- Previous visual and gameplay improvements.
+
+First inspect the existing project and identify the relevant systems before modifying them.
+
+---
+
+# 2. BOSS DEATH — MULTI-ANGLE CINEMATIC SEQUENCE
+
+Create a cinematic boss defeat sequence when the Stage 4 boss is successfully eliminated.
+
+The sequence must use MULTIPLE CAMERA ANGLES rather than a single camera position.
+
+The goal is to make the final boss defeat feel like a dramatic horror action movie scene.
+
+### 2.1 Cinematic Camera Sequence
+
+When the boss health reaches zero:
+
+- Trigger the boss death event exactly once.
+- Disable player combat input.
+- Stop other enemy attacks and spawning.
+- Temporarily disable the normal FPS camera controller.
+- Activate a dedicated cinematic camera system.
+- Keep the boss model visible throughout the sequence.
+- Play the boss death animation.
+- Gradually transition between multiple camera angles.
+
+Suggested cinematic sequence:
+
+**SHOT 1 — WIDE ESTABLISHING SHOT**
+
+Show the boss from a low frontal camera angle.
+
+The boss begins to stagger after receiving the final damage.
+
+Use dramatic lighting and environmental atmosphere.
+
+**SHOT 2 — SIDE CAMERA ANGLE**
+
+Switch to a side view.
+
+Show the boss losing balance and struggling to remain standing.
+
+Use a slow camera movement to emphasize its massive body.
+
+**SHOT 3 — CLOSE-UP SHOT**
+
+Move the camera closer to the boss.
+
+Focus on its mutated face, body deformation, and final death animation.
+
+Add appropriate sound effects and subtle camera movement.
+
+**SHOT 4 — LOW-ANGLE DEATH SHOT**
+
+Show the boss collapsing onto the ground.
+
+Use a low camera angle to emphasize the impact and scale of the creature.
+
+Synchronize the collapse animation with heavy impact audio.
+
+**SHOT 5 — FINAL WIDE SHOT**
+
+Switch to a wider cinematic view of the arena.
+
+Show the defeated boss lying on the ground.
+
+Add subtle environmental effects such as drifting smoke, dust, and atmospheric particles.
+
+Gradually reveal the final victory presentation.
+
+### 2.2 Camera Direction
+
+The cinematic camera should support:
+
+- Multiple predefined camera positions.
+- Smooth camera transitions.
+- Camera cuts at carefully selected moments.
+- Cinematic zoom.
+- Low-angle shots.
+- Close-up shots.
+- Wide environmental shots.
+- Smooth interpolation between camera positions.
+
+Do not allow the cinematic camera to clip through walls, the boss model, or environmental objects.
+
+Use camera collision checks where appropriate.
+
+### 2.3 Animation and Audio Synchronization
+
+The boss death animation should have multiple stages:
+
+1. Final hit reaction.
+2. Staggering.
+3. Losing balance.
+4. Falling or collapsing.
+5. Ground impact.
+6. Final movement or twitch.
+7. Complete stillness.
+
+Synchronize the animations with:
+- Heavy body impact.
+- Creature death sounds.
+- Environmental debris.
+- Low-frequency impact audio.
+- Background music transition.
+
+Suggested cinematic duration: 8-12 seconds, configurable.
+
+Allow the player to skip the cinematic after a short initial presentation period.
+
+After the cinematic:
+- Show a campaign victory screen.
+- Display completion information.
+- Provide restart or return-to-menu options.
+
+The sequence must trigger only once and must not be interrupted by regular gameplay logic.
+
+---
+
+# 3. DUAL-HAND GESTURE WEAPON SELECTION
+
+Modify the existing weapon wheel interaction.
+
+The weapon wheel must now use BOTH HANDS simultaneously.
+
+IMPORTANT CONTROL RULE:
+
+- LEFT HAND = OPEN AND CLOSE THE WEAPON WHEEL.
+- RIGHT HAND = SELECT THE WEAPON.
+
+Do not reverse these responsibilities.
+
+### 3.1 Left Hand — Weapon Wheel Activation
+
+The left hand controls the weapon wheel state.
+
+**Closed Fist = OPEN WEAPON WHEEL**
+
+When the player makes a stable fist with the left hand:
+- Open the semicircular weapon wheel.
+- Activate the existing slow-motion effect.
+- Apply background blur.
+- Display all weapon options.
+- Enable right-hand weapon selection.
+
+**Open Hand = CLOSE WEAPON WHEEL**
+
+When the player opens or unclenches their left hand:
+- Close the weapon wheel.
+- Remove background blur.
+- Restore normal gameplay speed.
+- Disable weapon selection through the right hand.
+
+This must work as a HOLD-BASED interaction.
+
+The weapon wheel remains open as long as the left hand is detected as a closed fist.
+
+The weapon wheel must NOT automatically close after selecting a weapon.
+
+The player can continue changing weapons while keeping the left hand clenched.
+
+### 3.2 Right Hand — Weapon Selection
+
+When the weapon wheel is open, recognize the number of extended fingers on the RIGHT HAND.
+
+Use the following mapping:
+
+| Right-hand gesture | Weapon |
+|---|---|
+| 1 finger | Assault Rifle (AR) |
+| 2 fingers | SMG |
+| 3 fingers | Flamethrower |
+| 4 fingers | Grenade |
+| 5 fingers | No selection |
+
+The player must be able to switch between weapons by changing the right-hand finger count while maintaining the left-hand fist.
+
+The weapon wheel stays open until the left hand is opened.
+
+### 3.3 Selection Behavior
+
+When a valid gesture is recognized:
+
+- Highlight the corresponding weapon slot.
+- Update the currently selected weapon.
+- Play a subtle selection sound.
+- Update ammunition information.
+- Update the weapon HUD.
+- Keep the weapon wheel visible.
+
+Do not automatically close the weapon wheel after selection.
+
+If the same finger count remains detected, do not repeatedly trigger weapon selection or spam selection audio.
+
+Allow a new selection when the right-hand gesture changes to another valid finger count.
+
+### 3.4 Hand Tracking Architecture
+
+The system must track both hands simultaneously.
+
+Requirements:
+- Correct left/right hand identification.
+- Independent landmark processing for each hand.
+- Correct handling of mirrored webcam input.
+- Finger-count detection for the right hand.
+- Fist and open-hand detection for the left hand.
+- Landmark smoothing.
+- Gesture stability thresholds.
+- Confidence thresholds.
+- Protection against accidental selections.
+
+Suggested initial detection settings:
+- Gesture activation stability: 200-300 ms.
+- Weapon selection stability: 200-300 ms.
+- Configurable tracking-loss timeout.
+
+If the right hand temporarily disappears, keep the current selected weapon without making a random selection.
+
+If the left hand temporarily loses tracking, briefly preserve its previous state to avoid flickering.
+
+If the left hand remains undetected beyond a configurable safety timeout, close the weapon wheel and restore normal gameplay.
+
+The webcam tracking overlay must remain visible and responsive.
+
+### 3.5 Important Interaction Rules
+
+- Right-hand selection is disabled when the weapon wheel is closed.
+- Left-hand fist does not select weapons.
+- Right-hand fist does not control the weapon wheel.
+- Opening the left hand always closes the wheel.
+- Five extended fingers on the right hand must not close the wheel.
+- Weapon selection must not trigger multiple times from one gesture.
+- Keep existing aiming and firing controls functional.
+- Do not allow gesture detection to interfere with shooting.
+
+Provide keyboard fallback controls for testing and accessibility.
+
+---
+
+# 4. NORMAL ZOMBIE REMODELING
+
+Redesign the regular zombie models to make them significantly more frightening.
+
+The previous normal zombie appearance should receive a substantial visual upgrade.
+
+Maintain the existing low-poly art direction.
+
+Do not turn the game into a photorealistic horror game that visually conflicts with its current environments.
+
+### 4.1 Character Design
+
+Redesign the normal zombie with:
+
+- More disturbing facial proportions.
+- Asymmetrical body structure.
+- Deformed posture.
+- Damaged clothing.
+- Mutated skin textures.
+- Darkened or pale skin variations.
+- Unusual head movement.
+- Distorted limbs.
+- Creepy facial expressions.
+- Distinct silhouettes.
+
+Add subtle horror details:
+- Blood-stained clothing.
+- Dirty and damaged body surfaces.
+- Torn sleeves.
+- Uneven limbs.
+- Abnormal eye appearance.
+- Visible injuries and mutations.
+
+Use carefully controlled blood and damage details that remain consistent with the low-poly art style.
+
+### 4.2 Zombie Animation
+
+Improve the normal zombie animations.
+
+Required animations:
+- Idle.
+- Slow walking.
+- Aggressive walking.
+- Running.
+- Attacking.
+- Receiving damage.
+- Staggering.
+- Death.
+
+Add variations:
+- Occasional head tilts.
+- Unnatural neck movement.
+- Uneven walking.
+- Slight body twitching.
+- Different idle poses.
+- Randomized movement timing.
+
+Avoid making every zombie perform exactly the same animation.
+
+Introduce a small pool of animation variations where possible.
+
+The zombie should feel unpredictable, disturbing, and biologically abnormal.
+
+### 4.3 Performance
+
+Reuse animation systems and model resources efficiently.
+
+Do not create expensive animation logic for every zombie individually when reusable animation configurations can achieve the same result.
+
+---
+
+# 5. WEAPON RELOAD ANIMATION UPGRADE
+
+Improve the existing reload animations.
+
+The reload process should look more physical, detailed, and believable.
+
+The player's first-person weapon and arms should have clear animation sequences.
+
+### 5.1 Assault Rifle Reload
+
+Implement:
+1. Reload initiation.
+2. Support hand moves toward the magazine.
+3. Existing magazine is removed.
+4. Magazine moves out of view.
+5. New magazine is retrieved.
+6. Magazine is inserted.
+7. Hand performs the appropriate charging or bolt action.
+8. Weapon returns to its firing position.
+
+### 5.2 SMG Reload
+
+Implement a dedicated SMG reload animation.
+
+Requirements:
+- Magazine removal.
+- Magazine replacement.
+- Proper hand movement.
+- Magazine insertion.
+- Appropriate weapon handling.
+- Return to firing position.
+
+Do not simply reuse the AR animation if the models have different magazine positions or geometry.
+
+### 5.3 Flamethrower Reload or Fuel Replacement
+
+If the existing Flamethrower uses limited fuel, implement an appropriate refill animation.
+
+Possible animation details:
+- Release fuel container.
+- Remove or detach the fuel canister.
+- Insert the replacement canister.
+- Reconnect the fuel system.
+- Perform a final readiness action.
+
+Match the animation to the actual Flamethrower model and fuel mechanics.
+
+### 5.4 Grenade
+
+Do not introduce an unnecessary magazine-style reload for grenades.
+
+Keep grenade inventory and cooldown mechanics intact.
+
+### 5.5 Animation and Gameplay Synchronization
+
+All reload animations must synchronize with real ammunition state.
+
+Requirements:
+- Reload starts only when allowed.
+- Firing is disabled during reload.
+- Ammo updates at the appropriate animation moment.
+- Reload sound effects synchronize with each action.
+- Reload cannot be duplicated.
+- Repeated input must not interrupt the animation incorrectly.
+- Reload completion restores normal firing.
+
+Use animation events or equivalent synchronization.
+
+Avoid simply changing the ammunition counter immediately when reload begins.
+
+---
+
+# 6. SOUND DETAILING — REALISTIC AUDIO DESIGN
+
+Upgrade the entire audio experience.
+
+The objective is to make weapons, zombies, environments, and player interactions feel more physically convincing.
+
+Do not rely on one short audio sample repeated for every action.
+
+### 6.1 Weapon Audio
+
+Every weapon must have more detailed audio layers.
+
+Assault Rifle:
+- Initial firing transient.
+- Mechanical firing sound.
+- Shell casing ejection.
+- Reload clicks.
+- Magazine insertion.
+- Bolt or charging handle sound.
+- Distant gunshot tail.
+
+SMG:
+- Distinct firing character.
+- Faster firing sequence.
+- Mechanical handling sounds.
+- Shell casing sounds.
+- Dedicated reload audio.
+
+Flamethrower:
+- Fuel ignition.
+- Gas flow.
+- Continuous fire.
+- Flame impact.
+- Burning sound.
+- Fuel system handling sounds.
+
+Grenade:
+- Handling sound.
+- Throwing sound.
+- Object movement where supported.
+- Explosion.
+- Debris and impact tails.
+
+### 6.2 Environmental Audio
+
+Add location-aware environmental audio.
+
+Examples:
+- Wind passing through abandoned buildings.
+- Distant zombie groans.
+- Loose metal moving.
+- Broken electrical equipment.
+- Distant explosions.
+- Environmental creaking.
+- Occasional debris sounds.
+- Unsettling ambient noises.
+
+### 6.3 Zombie Audio
+
+Give zombie categories distinct audio identities.
+
+Normal zombies:
+- Breathing.
+- Groaning.
+- Growling.
+- Footsteps.
+- Attack sounds.
+- Death sounds.
+
+Runner zombies:
+- Faster breathing.
+- Aggressive screams.
+- Rapid footsteps.
+- Distinct attack sounds.
+
+Armored zombies:
+- Heavy footsteps.
+- Armor movement.
+- Heavy impact sounds.
+
+Mutated zombies:
+- Distorted breathing.
+- Unusual creature vocalizations.
+- Burning reactions.
+
+Boss:
+- Heavy breathing.
+- Deep growls.
+- Attack preparation sounds.
+- Heavy movement.
+- Unique damage reactions.
+- Distinct death sound.
+
+Introduce controlled random audio variations to avoid obvious repetition.
+
+### 6.4 Spatial Audio
+
+Implement spatial audio wherever supported by the existing audio architecture.
+
+Requirements:
+- Directional sound positioning.
+- Distance-based attenuation.
+- Appropriate indoor and outdoor reverb.
+- Environmental occlusion where feasible.
+- Different sound character depending on location.
+- Avoid excessive overlapping sounds.
+
+The player should be able to identify nearby threats through audio direction where practical.
+
+### 6.5 Reload and Interaction Audio
+
+Synchronize small mechanical sounds with animations.
+
+Examples:
+- Magazine release.
+- Magazine insertion.
+- Weapon handling.
+- Chambering.
+- Hand movement.
+- Equipment movement.
+
+Make these details noticeable but not excessively loud.
+
+---
+
+# 7. BACKGROUND MUSIC & DYNAMIC HORROR SOUNDTRACK
+
+Introduce a complete music system.
+
+Music should change according to the game state.
+
+### Home Screen:
+- Dark ambient horror music.
+- Low-frequency drone.
+- Subtle unsettling textures.
+- Occasional atmospheric sound elements.
+
+### Stage 1:
+- Subtle suspense.
+- Low-intensity horror ambience.
+- Gradually increasing tension.
+
+### Stage 2:
+- More intense atmospheric music.
+- Greater sense of danger.
+- Additional percussion or rhythmic elements.
+
+### Stage 3:
+- Darker and more aggressive soundtrack.
+- Stronger tension.
+- More unsettling musical textures.
+
+### Stage 4:
+- Unique boss battle soundtrack.
+- More powerful and intense musical arrangement.
+- Dynamic changes based on boss combat phases.
+
+### Boss Defeat:
+- Gradually reduce combat music.
+- Introduce cinematic victory music.
+- Synchronize the music with the boss death sequence.
+
+### Audio Management
+
+Implement:
+- Separate music and sound effect volume.
+- Master volume.
+- Mute option.
+- Smooth audio transitions.
+- Music crossfading.
+- Audio ducking where appropriate.
+
+Do not allow multiple music tracks to overlap unintentionally.
+
+Use original or appropriately licensed music and audio assets.
+
+Do not use placeholder audio as the final implementation.
+
+---
+
+# 8. MAP DETAIL & HORROR ENVIRONMENT UPGRADE
+
+Upgrade the existing maps.
+
+The goal is to make all four stages feel more atmospheric, abandoned, and dangerous.
+
+Do not simply add random objects everywhere.
+
+Use environmental storytelling.
+
+### 8.1 Environmental Details
+
+Add appropriate details such as:
+- Abandoned vehicles.
+- Broken streetlights.
+- Damaged buildings.
+- Blood stains.
+- Blood trails.
+- Abandoned equipment.
+- Broken furniture.
+- Debris.
+- Damaged walls.
+- Destroyed barriers.
+- Rusted metal objects.
+- Overgrown vegetation.
+- Dark corridors.
+- Environmental fog.
+- Flickering lights.
+
+### 8.2 Stage-Specific Atmosphere
+
+Stage 1:
+Abandoned urban streets, destroyed vehicles, damaged buildings, and scattered debris.
+
+Stage 2:
+Industrial environment with rusted machinery, broken pipelines, damaged equipment, and unstable lighting.
+
+Stage 3:
+Dark research facility or contaminated environment with abandoned laboratories, broken lights, damaged scientific equipment, and unsettling environmental details.
+
+Stage 4:
+A distinctive boss arena with darker lighting, larger environmental structures, damaged surfaces, and a strong horror atmosphere.
+
+Each stage must have a recognizable visual identity.
+
+### 8.3 Lighting and Atmosphere
+
+Improve:
+- Environmental lighting.
+- Shadows.
+- Ambient occlusion where practical.
+- Fog.
+- Light flickering.
+- Localized lighting.
+- Atmospheric particles.
+
+Use lighting strategically.
+
+Darkness should create tension but must not make enemies or gameplay objectives impossible to see.
+
+Keep important combat areas readable.
+
+### 8.4 Map Design
+
+Add meaningful environmental landmarks.
+
+The player should recognize the environment and understand the combat space.
+
+Do not randomly obstruct important player movement paths.
+
+Preserve:
+- Navigation.
+- Enemy pathfinding.
+- Collision boundaries.
+- Shooting visibility.
+- Spawn positions.
+- Stage progression.
+
+Optimize environmental detail to maintain browser performance.
+
+---
+
+# 9. HOME SCREEN REDESIGN — MINIMAL HORROR EXPERIENCE
+
+Completely refine the home screen presentation.
+
+The home screen must become more frightening, cinematic, and visually memorable.
+
+However, the layout must remain SIMPLE.
+
+### 9.1 Overall Art Direction
+
+Create a dark horror-style main menu.
+
+Visual characteristics:
+- Deep black background.
+- Dark charcoal surfaces.
+- Dark crimson accents.
+- Blood splatters.
+- Blood smears.
+- Scratches.
+- Distressed textures.
+- Atmospheric fog.
+- Dark environmental lighting.
+
+The background should feature multiple visible blood stains and irregular blood splatters.
+
+Avoid a simple flat red background.
+
+Make it feel like a blood-stained abandoned environment.
+
+### 9.2 Zombie Showcase
+
+Add multiple zombie characters to the home screen.
+
+They should appear to be waiting in the environment and watching the player.
+
+Include:
+- Normal zombie.
+- Runner zombie.
+- Mutated zombie.
+- Larger or more intimidating zombie.
+
+Requirements:
+- Different zombie models.
+- Different body proportions.
+- Different idle animations.
+- Subtle breathing.
+- Head movement.
+- Occasional twitching.
+- Unnatural standing poses.
+- Atmospheric silhouettes.
+
+Position some zombies in the foreground and others farther in the background.
+
+Create a sense of depth using lighting and fog.
+
+Use carefully designed idle animations so the characters feel alive.
+
+The zombies must remain in showcase mode.
+
+They must NOT attack the player or trigger actual combat mechanics while the home screen is active.
+
+### 9.3 Typography
+
+Use a horror-inspired display font for the main game title.
+
+Font characteristics:
+- Distressed.
+- Rough edges.
+- Irregular letterforms.
+- Horror movie title aesthetic.
+- Strong visual identity.
+- Readable at different screen sizes.
+
+Use a simpler secondary font for buttons and supporting text.
+
+Do not use the horror display font for every UI element.
+
+### 9.4 Minimal Menu Layout
+
+Keep only the essential menu items.
+
+Suggested layout:
+
+GAME TITLE
+
+ZOMBIE SURVIVAL
+
+PLAY
+
+SETTINGS
+
+HOW TO PLAY
+
+CREDITS
+
+The PLAY button should be the primary visual focus.
+
+Use restrained hover animations.
+
+Avoid:
+- Excessive menu panels.
+- Unnecessary decorative elements.
+- Overcomplicated navigation.
+- Excessive visual clutter.
+
+### 9.5 Home Screen Audio
+
+Add:
+- Low ambient horror music.
+- Distant zombie groans.
+- Occasional environmental creaking.
+- Subtle atmospheric effects.
+- Volume controls.
+
+The menu ambience should create tension immediately when the player opens the game.
+
+---
+
+# 10. PERFORMANCE AND TECHNICAL REQUIREMENTS
+
+All updates must work with the existing browser-based game architecture.
+
+Requirements:
+- Preserve the current rendering engine.
+- Avoid unnecessary architectural rewrites.
+- Optimize camera switching.
+- Use reusable animation systems.
+- Optimize zombie showcase rendering.
+- Limit unnecessary particles.
+- Avoid excessive dynamic shadows.
+- Optimize spatial audio.
+- Prevent audio overlap.
+- Clean up cinematic camera objects.
+- Prevent memory leaks.
+- Keep hand tracking responsive.
+- Ensure the home screen and gameplay scenes remain isolated.
+
+Target smooth performance at approximately 60 FPS on capable hardware.
+
+Provide graceful degradation on lower-end hardware.
+
+---
+
+# 11. IMPLEMENTATION PRIORITIES
+
+Implement the update in the following order.
+
+**Phase 1 — Dual-Hand Controls**
+- Separate left-hand and right-hand responsibilities.
+- Implement hold-to-open behavior.
+- Implement open-hand-to-close behavior.
+- Implement right-hand finger-count selection.
+- Test simultaneous hand tracking.
+
+**Phase 2 — Boss Cinematic**
+- Create dedicated cinematic camera controller.
+- Create multiple camera positions.
+- Implement boss defeat animation sequence.
+- Synchronize sound and animation.
+- Implement victory presentation.
+
+**Phase 3 — Zombie Remodeling**
+- Improve normal zombie models.
+- Improve zombie animations.
+- Add idle variations.
+- Preserve zombie weakness functionality.
+
+**Phase 4 — Reload Animation**
+- Upgrade AR reload.
+- Upgrade SMG reload.
+- Add Flamethrower fuel replacement animation if applicable.
+- Synchronize ammo updates and sound.
+
+**Phase 5 — Audio Upgrade**
+- Implement weapon audio layers.
+- Improve zombie audio.
+- Add spatial audio.
+- Add stage-specific music.
+- Add dynamic boss soundtrack.
+
+**Phase 6 — Map Upgrade**
+- Add environmental storytelling.
+- Improve lighting.
+- Improve map details.
+- Enhance atmosphere.
+- Preserve navigation and performance.
+
+**Phase 7 — Home Screen**
+- Redesign menu.
+- Add zombie showcase.
+- Add horror typography.
+- Add blood-stained background.
+- Add atmospheric music.
+
+**Phase 8 — Testing and Polish**
+- Test dual-hand controls.
+- Test all weapon selections.
+- Test reload synchronization.
+- Test boss cinematics.
+- Test audio transitions.
+- Test zombie animations.
+- Test stage environments.
+- Test performance.
+
+---
+
+# 12. ACCEPTANCE CRITERIA
+
+### Dual-Hand Controls
+- [ ] Left-hand fist opens weapon wheel.
+- [ ] Left-hand open gesture closes weapon wheel.
+- [ ] Wheel remains open while left hand stays clenched.
+- [ ] Right hand selects weapons.
+- [ ] One finger selects AR.
+- [ ] Two fingers select SMG.
+- [ ] Three fingers select Flamethrower.
+- [ ] Four fingers select Grenade.
+- [ ] Five fingers do not select a weapon.
+- [ ] Weapon selection does not automatically close the wheel.
+- [ ] Both hands are tracked independently.
+
+### Boss Cinematic
+- [ ] Boss death triggers a dedicated cinematic.
+- [ ] At least four distinct camera angles are used.
+- [ ] Camera transitions are smooth and intentional.
+- [ ] Boss death animation is synchronized.
+- [ ] Audio is synchronized.
+- [ ] Victory screen appears afterward.
+- [ ] Cinematic does not trigger more than once.
+
+### Zombie Remodeling
+- [ ] Normal zombies look more frightening.
+- [ ] Low-poly visual direction is preserved.
+- [ ] Zombie animations have more variation.
+- [ ] Combat and weakness mechanics remain functional.
+
+### Reload and Audio
+- [ ] Reload animations are improved.
+- [ ] Magazine and fuel replacement are synchronized.
+- [ ] Ammo state updates correctly.
+- [ ] Weapon sounds have more detail.
+- [ ] Zombie sounds have distinct identities.
+- [ ] Environmental audio is present.
+- [ ] Music changes with game progression.
+
+### Maps and Home Screen
+- [ ] Stage environments have more details.
+- [ ] Lighting and atmosphere are improved.
+- [ ] Navigation remains functional.
+- [ ] Home screen uses a minimal horror layout.
+- [ ] Multiple zombie showcase characters are visible.
+- [ ] Zombies have different idle animations.
+- [ ] Blood stains and horror typography are present.
+- [ ] Ambient horror music works.
+- [ ] Showcase zombies cannot attack.
+
+---
+
+# 13. FINAL DEVELOPMENT INSTRUCTIONS
+
+Do not treat this update as a visual mockup project.
+
+Every new feature must be integrated into the actual game.
+
+Before implementation:
+1. Inspect the current codebase.
+2. Identify the existing systems.
+3. Find the correct files to modify.
+4. Preserve functional features.
+
+After implementation:
+1. Report modified files.
+2. Report implemented features.
+3. Explain important technical changes.
+4. Run gameplay and gesture tests.
+5. Verify previous functionality.
+6. Report incomplete features honestly.
+
+Do not replace existing systems simply because implementing a new system from scratch seems easier.
+
+Prioritize gameplay stability, cinematic presentation, believable animations, realistic audio, and a coherent horror atmosphere.
+
+FINAL VISION:
+
+A polished low-poly first-person zombie survival game featuring responsive dual-hand gesture controls, strategic combat, frightening zombie creatures, cinematic boss execution, immersive sound design, and an atmospheric horror world.

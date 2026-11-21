@@ -1,0 +1,1431 @@
+# MAP & CAMPAIGN OVERHAUL
+## THE KING'S TERRITORY — Four-Stage Zombie Horror Campaign
+
+### 1. DEVELOPMENT OBJECTIVE
+
+Act as a Senior Game Developer, Level Designer, Environmental Storyteller, Cinematic Director, AI Gameplay Programmer, and Horror Game Designer.
+
+Upgrade the existing four-stage zombie survival FPS into a connected horror campaign with environmental storytelling, automatic character movement, cinematic transitions, and an epic final boss arena.
+
+The campaign consists of:
+
+1. Stage 1 — Abandoned Village
+2. Stage 2 — Cursed Forest
+3. Stage 3 — Underground Facility
+4. Stage 4 — The Arena of the Dead
+
+The entire campaign must feel like one continuous journey.
+
+IMPORTANT DESIGN REQUIREMENT:
+
+PLAYER MOVEMENT MUST BE AUTOMATIC.
+
+Do not use traditional WASD movement as the primary movement system.
+
+The character automatically walks or runs along predefined routes using waypoints, spline paths, or an equivalent navigation system.
+
+The player remains in first-person perspective.
+
+The player can still:
+- Look around.
+- Aim.
+- Shoot.
+- Switch weapons.
+- Use the existing left-hand weapon wheel.
+- Select weapons using the right hand.
+- Interact with gameplay systems.
+
+The character's movement and progression are controlled by the game system.
+
+Do not remove existing shooting, aiming, gesture recognition, or weapon mechanics.
+
+---
+
+# 2. AUTOMATIC PLAYER MOVEMENT SYSTEM
+
+Implement a dedicated automatic movement system for the entire campaign.
+
+The player should automatically travel through the environment as the story progresses.
+
+### 2.1 Movement Architecture
+
+Use:
+- Predefined waypoints.
+- Spline-based paths where appropriate.
+- Smooth player movement.
+- Camera movement synchronized with player movement.
+- Automatic stopping points.
+- Automatic movement resumption.
+
+The system must control:
+- Forward walking.
+- Forward running.
+- Cinematic movement.
+- Transitions between environments.
+- Scripted chase movement.
+- Final exit movement.
+
+### 2.2 Gameplay Behavior
+
+The player automatically moves along the current campaign route.
+
+When entering an enemy combat zone:
+- Automatically stop at a designated combat position.
+- Activate the current zombie wave.
+- Allow the player to aim and shoot.
+- Keep weapon selection functional.
+- Do not force the character to keep walking during ordinary wave combat.
+
+When the wave is completed:
+- Trigger the appropriate progression event.
+- Resume automatic movement.
+- Move the character toward the next story destination.
+
+### 2.3 Combat Movement
+
+During boss encounters and special chase events, automatic movement can become more dynamic.
+
+Examples:
+- Automatically retreating during a boss jump attack.
+- Running forward during the Phase 2 chase.
+- Automatically navigating around predefined obstacles.
+- Moving toward a safe combat position.
+- Continuing the route when the danger sequence ends.
+
+The player should not need to press WASD to perform these movements.
+
+Preserve first-person aiming and shooting.
+
+### 2.4 Movement Quality
+
+Requirements:
+- Realistic walking speed.
+- Running animation when sprinting.
+- Footstep synchronization.
+- Natural first-person camera bobbing.
+- Smooth acceleration and deceleration.
+- Proper collision handling.
+- No visible teleportation.
+- No walking through walls.
+- No clipping into environmental objects.
+
+The character's animation must match actual movement.
+
+Do not simply animate the weapon or camera while leaving the player stationary.
+
+### 2.5 Input Requirements
+
+WASD must not be required for campaign navigation.
+
+Do not allow accidental keyboard movement to override the automatic route.
+
+Keep other existing controls intact.
+
+The player remains responsible for combat decisions, while the game controls the character's progression and movement.
+
+---
+
+# 3. STAGE 1 — ABANDONED VILLAGE
+## Theme: The Beginning of the Outbreak
+
+Create an abandoned rural village that appears to have been evacuated suddenly after the initial zombie outbreak.
+
+The environment should feel empty, disturbing, and abandoned.
+
+### 3.1 Environment Design
+
+Include:
+- Abandoned village houses.
+- Empty residential buildings.
+- Damaged wooden doors.
+- Broken windows.
+- Abandoned vehicles.
+- Narrow village roads.
+- Overgrown vegetation.
+- Thin environmental fog.
+- Blood-stained walls.
+- Abandoned personal belongings.
+- Dark corners.
+- Cobwebs around unused buildings.
+- Damaged streetlights.
+- Scattered debris.
+
+Use low-poly environments with improved semi-realistic textures.
+
+### 3.2 Environmental Storytelling
+
+The village must communicate that people escaped in a hurry.
+
+Add environmental details such as:
+- Open doors left behind.
+- Suitcases abandoned near houses.
+- Children's toys on the road.
+- Food left on tables.
+- Abandoned bicycles.
+- Fallen chairs.
+- Blood trails leading away from houses.
+- Emergency evacuation notices.
+- Vehicles abandoned with doors open.
+- Broken barricades.
+
+Do not place objects randomly.
+
+Each detail should suggest a believable evacuation event.
+
+### 3.3 Enemy Composition
+
+Stage 1 primarily introduces normal zombies.
+
+Include:
+- Basic zombies.
+- Limping zombies.
+- A small number of crawling zombies.
+- Different anatomical variants.
+
+Do not overwhelm the player.
+
+The first stage introduces enemy behavior and establishes the atmosphere.
+
+### 3.4 Automatic Movement and Wave System
+
+The character automatically walks through the village route.
+
+At designated encounter areas:
+- Stop player movement.
+- Activate zombie waves.
+- Allow combat.
+- Wait for the objective to be completed.
+
+After the last wave:
+- Trigger the Stage 1 ending sequence.
+
+### 3.5 STAGE 1 ENDING — THE CREATURE IN THE FOREST
+
+This sequence is important.
+
+After the final zombie wave is eliminated:
+
+**EVENT 1 — SIREN**
+
+A distant emergency siren begins to sound.
+
+The sound should feel distant and unsettling.
+
+**EVENT 2 — IRON GATE**
+
+A large abandoned iron gate begins opening.
+
+Add:
+- Heavy mechanical movement.
+- Metal creaking.
+- Gate vibration.
+- Environmental dust.
+- Appropriate sound effects.
+
+**EVENT 3 — THE CREATURE**
+
+As the gate opens, reveal a massive creature standing far away.
+
+Do not fully reveal its identity.
+
+The creature should:
+- Have a recognizable large silhouette.
+- Stand partially obscured by fog.
+- Move slowly.
+- Look noticeably larger than regular zombies.
+
+The creature observes the player briefly.
+
+Then it turns and disappears into the forest.
+
+**EVENT 4 — OBJECTIVE**
+
+Display the new objective:
+
+FOLLOW THE CREATURE
+
+Use a cinematic objective title.
+
+The player automatically begins walking toward the forest entrance.
+
+Do not require WASD.
+
+### 3.6 Seamless Transition to Stage 2
+
+The player enters the forest through the same visible environment.
+
+The transition must feel continuous.
+
+Requirements:
+- No long loading screen.
+- No sudden black-screen stage teleport.
+- Preserve player position.
+- Stream the next environment in advance.
+- Gradually change lighting and fog.
+- Change ambient audio naturally.
+- Reveal the forest while the player continues walking.
+
+The creature's tracks should remain visible along the route.
+
+Stage 2 begins naturally as the player follows the creature.
+
+---
+
+# 4. STAGE 2 — CURSED FOREST
+## Theme: The First Experiments
+
+The forest is the location where early experiments were conducted.
+
+The player gradually discovers that the outbreak was not simply a natural disease.
+
+### 4.1 Environment Design
+
+Create a dark, disturbing forest.
+
+Include:
+- Dead trees.
+- Twisted tree branches.
+- Dense vegetation.
+- Hanging corpses.
+- Blood-stained tree trunks.
+- Abandoned research equipment.
+- Small abandoned laboratory.
+- Broken research vehicles.
+- Blood trails.
+- Spider webs.
+- Fog between trees.
+- Damaged fences.
+- Abandoned camping equipment.
+- Strange environmental markings.
+
+The environment should feel oppressive and dangerous.
+
+### 4.2 Hanging Corpses
+
+Add disturbing environmental props depicting abandoned victims.
+
+Requirements:
+- Hanging body silhouettes.
+- Different body positions.
+- Appropriate hanging animations where necessary.
+- Subtle wind movement.
+- Dark environmental presentation.
+
+These objects are environmental storytelling props.
+
+They must not become active enemies unless explicitly configured.
+
+### 4.3 Abandoned Research Laboratory
+
+Create a small experimental laboratory inside the forest.
+
+Include:
+- Small research building.
+- Broken laboratory equipment.
+- Documents.
+- Research computers.
+- Damaged containment equipment.
+- Broken specimen containers.
+- Blood stains.
+- Emergency lighting.
+- Abandoned scientific tools.
+
+This is where the player starts understanding the outbreak's origin.
+
+### 4.4 Enemy Composition
+
+Increase zombie aggression.
+
+Introduce:
+- Aggressive normal zombies.
+- Crawlers.
+- Mutated zombies.
+- Arm-damaged zombies.
+- Leg-damaged zombies.
+- Faster Runner zombies.
+
+Use varied enemy compositions.
+
+The forest should feel less safe than Stage 1.
+
+### 4.5 LORE SYSTEM — SUBJECT ALPHA
+
+Introduce readable research notes throughout the laboratory and nearby areas.
+
+Display the following notes:
+
+DOCUMENT 01:
+
+"Subject Alpha has successfully survived the initial experimentation."
+
+DOCUMENT 02:
+
+"Subject Alpha demonstrates intelligence beyond all previous expectations."
+
+DOCUMENT 03:
+
+"Subject Alpha is no longer responding to conventional containment procedures."
+
+DOCUMENT 04:
+
+"Subject Alpha appears to exhibit control over nearby infected subjects."
+
+These documents should gradually establish that the final boss is not an ordinary zombie.
+
+### 4.6 Document Interaction
+
+When the player approaches an important document:
+- Automatically trigger a short inspection event.
+- Show the document on screen.
+- Display its text clearly.
+- Add appropriate interaction audio.
+- Allow the player to continue.
+- Resume automatic movement afterward.
+
+Do not require WASD navigation.
+
+Keep document interactions short enough that the pacing of the campaign is preserved.
+
+### 4.7 STAGE 2 ENDING — THE BUNKER
+
+After the final wave:
+
+**EVENT 1 — THE ROAR**
+
+A massive creature roar echoes across the forest.
+
+Stop ambient movement briefly to emphasize the sound.
+
+**EVENT 2 — GROUND VIBRATION**
+
+The ground begins to shake.
+
+Add:
+- Camera shake.
+- Falling leaves.
+- Small environmental debris.
+- Tree movement.
+- Disturbing low-frequency audio.
+
+**EVENT 3 — FOOTPRINTS**
+
+Reveal enormous footprints leading toward an underground facility.
+
+The footprints should be noticeably larger than ordinary human footprints.
+
+**EVENT 4 — BUNKER REVEAL**
+
+The player automatically follows the footprints.
+
+A large underground bunker entrance becomes visible.
+
+The entrance begins opening.
+
+Add:
+- Heavy mechanical sounds.
+- Dust.
+- Metal movement.
+- Dark interior lighting.
+
+The player automatically walks into the facility.
+
+### 4.8 Seamless Transition to Stage 3
+
+Avoid a long loading screen.
+
+Load the underground environment while the player approaches the bunker.
+
+Gradually transition:
+- Outdoor forest ambience.
+- Indoor mechanical ambience.
+- Lighting conditions.
+- Environmental fog.
+- Footstep sound character.
+
+The player should feel as though they physically entered the underground facility.
+
+---
+
+# 5. STAGE 3 — UNDERGROUND FACILITY
+## Theme: The Birth of the King
+
+This stage reveals the true origin of the final boss.
+
+The player discovers that Subject Alpha was once a human being.
+
+The experiments that created the outbreak eventually produced the King of the Zombies.
+
+### 5.1 Environment Design
+
+Create a large underground experimental facility.
+
+Include:
+- Narrow corridors.
+- Flickering lights.
+- Damaged laboratory rooms.
+- Broken experiment tubes.
+- Broken specimen containers.
+- Abandoned scientific equipment.
+- Blood-covered floors.
+- Research laboratories.
+- Dark storage areas.
+- Heavy security doors.
+- Dead scientists.
+- Emergency lighting.
+- Red alarm lighting.
+- Spider webs.
+- Environmental decay.
+
+The corridors should feel enclosed and claustrophobic.
+
+Use perspective and lighting to make the facility feel larger than the player's immediate field of view.
+
+### 5.2 Environment Variation
+
+Do not make every corridor identical.
+
+Create distinct sections:
+
+SECTION A — Security Entrance
+
+Abandoned security checkpoint.
+
+SECTION B — Research Corridor
+
+Narrow corridors with flickering lights and damaged doors.
+
+SECTION C — Experiment Laboratory
+
+Large rooms with broken experiment containers.
+
+SECTION D — Specimen Storage
+
+Dark containment area containing abandoned experimental equipment.
+
+SECTION E — Subject Alpha Chamber
+
+A highly important location containing the final research records.
+
+### 5.3 Zombie Composition
+
+Introduce highly mutated zombies.
+
+Include:
+- Mutated zombies.
+- Crawlers.
+- Armored zombies.
+- Headless variants.
+- Exposed rib cage variants.
+- Severe limb-damaged variants.
+
+Increase aggression and enemy difficulty.
+
+Use environmental ambushes carefully.
+
+### 5.4 MAIN LORE REVELATION
+
+The player discovers the complete history of Subject Alpha.
+
+Introduce the following research records:
+
+DOCUMENT 01 — ORIGINAL IDENTITY
+
+"Subject Alpha was originally a human research participant."
+
+DOCUMENT 02 — EXPERIMENT FAILURE
+
+"The experimental procedure has exceeded all safety parameters. The subject is undergoing irreversible physical transformation."
+
+DOCUMENT 03 — CONTAINMENT FAILURE
+
+"All containment procedures have failed. Personnel evacuation is mandatory."
+
+DOCUMENT 04 — FINAL OBSERVATION
+
+"Subject Alpha has developed extraordinary physical strength, abnormal regenerative behavior, and apparent cognitive control over infected organisms."
+
+DOCUMENT 05 — FINAL WARNING
+
+"The subject should no longer be classified as a human or conventional infected individual."
+
+"Subject Alpha has become something else."
+
+### 5.5 The King Revelation
+
+At the final laboratory section, reveal a large observation window, damaged containment chamber, or research display.
+
+Show visual evidence of the original boss.
+
+The player gradually realizes:
+
+The final boss is not an ordinary zombie.
+
+It was once human.
+
+It survived the experiments.
+
+It became the most powerful infected creature.
+
+It is now known as:
+
+THE KING.
+
+Use a cinematic presentation to emphasize this revelation.
+
+Do not reveal the entire boss fight too early.
+
+### 5.6 STAGE 3 ENDING — THE DESCENT
+
+After the final wave:
+
+**EVENT 1 — RED ALARM**
+
+All emergency lights begin flashing red.
+
+Activate a facility-wide alarm.
+
+**EVENT 2 — SECURITY FAILURE**
+
+All major security doors begin opening.
+
+Add:
+- Mechanical sounds.
+- Heavy door movement.
+- Flickering lights.
+- Environmental vibration.
+- Distant creature sounds.
+
+**EVENT 3 — ELEVATOR REVEAL**
+
+The player automatically approaches a large industrial elevator.
+
+The elevator doors open.
+
+The player enters automatically.
+
+**EVENT 4 — LONG DESCENT**
+
+The elevator begins descending.
+
+This must be a cinematic sequence.
+
+During the descent:
+- The elevator moves visibly.
+- The environment changes outside the elevator where possible.
+- Lighting becomes increasingly darker.
+- The elevator vibrates subtly.
+- The music grows more intense.
+- Distant crowd noises gradually become audible.
+- The player can look around while descending.
+
+The descent should feel long enough to build anticipation.
+
+Suggested initial duration: 10–15 seconds, configurable.
+
+Do not freeze the screen for 15 seconds.
+
+Use moving environment visuals, camera details, audio progression, and elevator animation.
+
+**EVENT 5 — THE ARENA REVEAL**
+
+The elevator finally stops.
+
+The doors slowly open.
+
+Immediately reveal the enormous Stage 4 arena.
+
+Show:
+- Circular architecture.
+- Damaged spectator stands.
+- Massive environmental structures.
+- Fire.
+- Thousands of zombie spectators.
+- The King standing in the center.
+
+Do not insert an unnecessary loading screen after the elevator opens.
+
+The transition must feel like one continuous reveal.
+
+---
+
+# 6. STAGE 4 — THE ARENA OF THE DEAD
+## Theme: The Kingdom of the Undead
+
+This is the climax of the campaign.
+
+Do not create an ordinary empty boss arena.
+
+Create a massive zombie gladiator arena inspired by ancient amphitheaters and dark horror architecture.
+
+The environment must communicate that the King rules over the infected.
+
+### 6.1 Arena Architecture
+
+Create a large circular arena.
+
+Include:
+- Circular combat floor.
+- Massive damaged spectator stands.
+- Multiple levels of seating.
+- Broken stone structures.
+- Destroyed pillars.
+- Hanging chains.
+- Large metal gates.
+- Fire sources around the arena.
+- Dark environmental fog.
+- Blood-covered stone.
+- Damaged arena walls.
+- Environmental debris.
+- Red accent lighting.
+
+The arena must feel ancient, brutal, and disturbing.
+
+Create an identifiable central combat area.
+
+### 6.2 Zombie Audience — THE HORDE
+
+The spectator stands must contain a massive crowd of zombies.
+
+The intended visual impression is thousands of infected creatures watching the arena.
+
+These zombies are spectators during the boss introduction and Phase 1.
+
+They should:
+- Stand in groups.
+- Raise their arms.
+- Jump.
+- Scream.
+- Roar.
+- Move their bodies.
+- React to the boss.
+- React to major combat events.
+
+Some spectators may have:
+- Missing limbs.
+- Exposed rib cages.
+- Distorted faces.
+- Abnormal body proportions.
+- Different zombie silhouettes.
+
+Use multiple visual variations.
+
+### 6.3 Crowd Behavior
+
+The zombie spectators are not ordinary combat enemies at the beginning.
+
+They must behave like an audience watching a gladiator match.
+
+During the introduction:
+- Some zombies scream.
+- Some wave their arms.
+- Some jump.
+- Some bang against the arena barriers.
+- Some remain still and observe.
+
+Create synchronized and randomized crowd behavior.
+
+Do not animate every spectator with expensive independent AI.
+
+### 6.4 Crowd Performance Optimization
+
+The intended appearance is thousands of zombies.
+
+Use efficient rendering techniques:
+- Instanced meshes.
+- Level of detail.
+- Shared animation systems.
+- Simplified distant models.
+- Billboard or silhouette techniques when appropriate.
+- Limited active animation groups.
+- Controlled visibility.
+
+Only a smaller subset needs detailed independent animations.
+
+Distant zombies can use cheaper animated representations.
+
+The crowd should look massive without creating thousands of full AI agents.
+
+### 6.5 The King Introduction
+
+The King stands alone in the center of the arena.
+
+Boss characteristics:
+- Height approximately 5–8 meters.
+- Massive body.
+- Semi-realistic stylized horror anatomy.
+- Disturbing mutated structure.
+- Large limbs.
+- Unique silhouette.
+- Heavy movement.
+- Unique boss weapon or mutated arms.
+
+The boss may carry a massive weapon or use enormous mutated limbs.
+
+Use the existing approved boss design where possible.
+
+### 6.6 BOSS INTRODUCTION CINEMATIC
+
+Create a dramatic introduction sequence.
+
+SHOT 1 — ARENA ESTABLISHING VIEW
+
+Show the enormous circular arena.
+
+Reveal the zombies filling the spectator stands.
+
+SHOT 2 — CROWD REACTION
+
+The zombie audience begins screaming and jumping.
+
+The sound grows louder.
+
+SHOT 3 — THE KING
+
+Show the King standing in the center of the arena.
+
+Use a low-angle camera.
+
+SHOT 4 — THE HAND RAISE
+
+The King slowly raises one arm.
+
+Immediately intensify the zombie crowd reactions.
+
+The audience becomes increasingly hysterical.
+
+SHOT 5 — FINAL REVEAL
+
+The camera focuses on the King's face and body.
+
+Display the boss name:
+
+THE KING
+
+SUBJECT ALPHA
+
+The fight begins.
+
+After the introduction, return to the normal FPS camera.
+
+---
+
+# 7. FINAL BOSS — FOUR PHASE SYSTEM
+
+Implement a four-phase boss encounter.
+
+The boss health bar must represent the actual remaining health.
+
+The phase thresholds are:
+
+- Phase 1: 100% to 70%.
+- Phase 2: 70% to 40%.
+- Phase 3: 40% to 10%.
+- Final Phase: 10% to 0%.
+
+Make the health threshold transitions occur only once.
+
+### PHASE 1 — THE KING
+
+Health: 100% to 70%.
+
+Boss fights alone.
+
+The zombie spectators remain in the stands and watch.
+
+Behavior:
+- Heavy attacks.
+- Slow powerful movement.
+- Melee attacks.
+- Ground slams.
+- Area attacks.
+- Distinct attack telegraphs.
+
+The King should feel powerful but deliberate.
+
+Crowd behavior:
+- Zombies roar.
+- Zombies jump.
+- Zombies celebrate major attacks.
+- Zombies remain outside the combat arena.
+
+No spectator should enter combat during Phase 1.
+
+### PHASE 2 — THE HORDE DESCENDS
+
+Trigger when boss health reaches 70%.
+
+The King releases a massive roar.
+
+The spectator stands begin reacting violently.
+
+Several zombie spectators climb over or descend from the arena stands.
+
+These zombies enter the combat floor and assist the King.
+
+Introduce:
+- Basic zombies.
+- Crawlers.
+- Aggressive runners.
+- Mutated zombies.
+
+The crowd should create pressure while the King continues attacking.
+
+Important:
+Do not spawn every spectator as an active enemy.
+
+Only a configurable subset should enter the arena.
+
+The remaining zombies continue their crowd reactions.
+
+Boss behavior:
+- More aggressive movement.
+- Jump attacks.
+- Pursuit.
+- Heavy attacks.
+- Ground impact attacks.
+
+Keep the previously implemented Phase 2 chase mechanics where appropriate.
+
+The player can be moved automatically through designated chase routes during specific attacks.
+
+Do not require WASD.
+
+### PHASE 3 — THE COLLAPSING ARENA
+
+Trigger when boss health reaches 40%.
+
+The arena begins to destabilize.
+
+Visual events:
+- Arena structures start collapsing.
+- Fire spreads to designated sections.
+- Dust and debris appear.
+- Environmental lights flicker.
+- The audience becomes increasingly aggressive.
+- More zombies enter the combat floor.
+
+The music becomes more intense.
+
+The King gains additional attacks.
+
+Introduce:
+- Larger area attacks.
+- Stronger ground slams.
+- Aggressive pursuit.
+- Environmental hazard attacks.
+
+Do not destroy the entire playable arena.
+
+Keep important combat paths and collision boundaries intact.
+
+Simulate destruction through controlled environmental events, not unrestricted physics on every object.
+
+### FINAL PHASE — THE SILENCE
+
+Trigger when boss health reaches 10%.
+
+This must become the most memorable moment in the entire campaign.
+
+Immediately:
+
+1. The King stops its current movement.
+2. The zombie spectators stop moving.
+3. All crowd reactions fade.
+4. The music stops abruptly.
+5. Environmental audio becomes extremely quiet.
+6. The camera focuses on the King.
+7. Only the King's breathing can be heard.
+
+The arena becomes almost completely silent.
+
+Display a brief cinematic moment.
+
+The King slowly prepares to attack.
+
+Then:
+
+THE FINAL CHARGE
+
+The King suddenly charges toward the player.
+
+Requirements:
+- Powerful acceleration.
+- Distinct charge animation.
+- Appropriate warning cue.
+- Camera shake.
+- Heavy movement sounds.
+- Environmental impact effects.
+
+The player automatically runs along a designated escape path.
+
+No WASD required.
+
+Keep aiming and shooting functional.
+
+The player must have an opportunity to survive the charge and continue the final combat encounter.
+
+The King remains vulnerable according to the actual damage system.
+
+The final phase should feel desperate and dangerous.
+
+Do not automatically defeat the boss through the cinematic charge.
+
+The player must still complete the fight.
+
+---
+
+# 8. FINAL BOSS DEATH — THE SILENT KINGDOM
+
+Preserve the previously implemented multi-angle boss death cinematic.
+
+After the King is defeated:
+
+### EVENT 1 — THE FINAL FALL
+
+Trigger the boss death animation.
+
+Use multiple cinematic angles:
+- Wide shot.
+- Side angle.
+- Close-up.
+- Low-angle collapse.
+- Final arena view.
+
+Synchronize camera transitions with the boss animation.
+
+### EVENT 2 — THE CROWD FALLS SILENT
+
+Immediately after the King's death:
+
+All zombie spectators stop moving.
+
+No cheering.
+
+No screaming.
+
+No jumping.
+
+The entire audience becomes completely silent.
+
+The zombies appear to have lost their leader.
+
+### EVENT 3 — THE HORDE COLLAPSES
+
+After a brief silence, the spectators begin collapsing.
+
+Create a staggered visual sequence:
+
+- Nearby zombies collapse first.
+- Other sections follow.
+- Distant audience members collapse afterward.
+- The entire arena gradually becomes motionless.
+
+Use synchronized animation groups and controlled timing.
+
+Do not simulate thousands of individual physics collapses.
+
+The effect should visually suggest that the King's death has destroyed the connection controlling the horde.
+
+### EVENT 4 — THE EMPTY ARENA
+
+The arena becomes quiet.
+
+Fire continues burning in the background.
+
+Smoke and dust remain visible.
+
+The King lies defeated in the center.
+
+The player receives the final victory presentation.
+
+---
+
+# 9. FINAL ENDING — ESCAPE THE ARENA
+
+After the boss death sequence:
+
+The player automatically begins walking toward the large arena exit gate.
+
+The exit gate should be visible from the arena.
+
+Movement is controlled by the automatic navigation system.
+
+No WASD is required.
+
+### Ending sequence
+
+1. The player leaves the central arena.
+2. Walks past the fallen spectators.
+3. Passes the defeated King.
+4. Approaches the enormous exit gate.
+5. The gate begins opening.
+6. Ambient light appears beyond the gate.
+7. The player exits the arena.
+8. The camera gradually fades out.
+
+Display the campaign ending title:
+
+THE KING HAS FALLEN
+
+THE OUTBREAK IS NOT FORGOTTEN.
+
+Then show:
+
+CAMPAIGN COMPLETED
+
+Provide:
+- Restart campaign.
+- Return to home screen.
+- Final completion statistics.
+
+Do not add another boss or surprise combat encounter after the final victory unless explicitly designed as a future expansion.
+
+---
+
+# 10. SEAMLESS WORLD TRANSITIONS
+
+The four stages must feel like parts of the same world.
+
+Transitions:
+
+Stage 1 → Stage 2:
+The player follows the creature through the village gate into the forest.
+
+Stage 2 → Stage 3:
+The player follows giant footprints into the bunker.
+
+Stage 3 → Stage 4:
+The player enters the elevator and descends into the arena.
+
+Stage 4 Ending:
+The player automatically exits through the arena gate.
+
+### Technical Requirements
+
+Implement:
+- Background scene preloading.
+- Environment streaming.
+- Asset loading management.
+- Automatic movement paths.
+- Persistent player state.
+- Smooth camera transitions.
+- Audio crossfades.
+- Controlled environment reveal.
+
+Do not keep every stage fully loaded simultaneously if doing so creates memory pressure.
+
+Use appropriate scene streaming or chunk loading.
+
+Avoid long loading screens.
+
+A short atmospheric transition is acceptable when technically necessary, but it must not feel like an unrelated level teleport.
+
+---
+
+# 11. ENVIRONMENTAL AUDIO & MUSIC
+
+Each stage must have a unique sound identity.
+
+Stage 1:
+- Wind through empty houses.
+- Distant sirens.
+- Zombie groans.
+- Loose metal sounds.
+- Subtle horror ambience.
+
+Stage 2:
+- Forest wind.
+- Branch movement.
+- Distant creature roars.
+- Rustling vegetation.
+- Unsettling forest ambience.
+
+Stage 3:
+- Electrical buzzing.
+- Flickering lights.
+- Mechanical ventilation.
+- Laboratory alarms.
+- Heavy door sounds.
+- Disturbing creature noises.
+
+Stage 4:
+- Massive zombie crowd ambience.
+- Arena echoes.
+- Fire.
+- Heavy footsteps.
+- Crowd reactions.
+- Boss breathing.
+- Boss roar.
+
+### Dynamic Crowd Audio
+
+The zombie audience must react to the boss phases.
+
+Phase 1:
+Moderate crowd reactions.
+
+Phase 2:
+Louder and more aggressive crowd sounds.
+
+Phase 3:
+Intense screaming and crowd activity.
+
+Final Phase:
+All crowd sounds stop immediately.
+
+Only the King's breathing remains audible.
+
+After the boss dies:
+The arena becomes silent.
+
+Use spatial audio and distance attenuation where supported.
+
+Avoid playing thousands of individual zombie audio sources simultaneously.
+
+Use layered crowd ambience and controlled reaction events.
+
+---
+
+# 12. TECHNICAL ARCHITECTURE
+
+Inspect the existing project before implementation.
+
+Suggested systems:
+
+- CampaignManager
+- AutoMovementController
+- WaypointNavigationController
+- SceneStreamingManager
+- StageEnvironmentManager
+- StoryObjectiveManager
+- LoreDocumentManager
+- CinematicTransitionManager
+- BossPhaseController
+- BossArenaController
+- ZombieCrowdManager
+- CrowdAnimationController
+- CrowdReactionController
+- BossDeathSequenceController
+- CampaignEndingController
+- DynamicAudioManager
+
+Adapt these to the existing architecture.
+
+### Critical Implementation Rules
+
+1. Do not create separate unrelated player controllers for every stage.
+2. Reuse the same player movement architecture.
+3. Make automatic movement state-aware.
+4. Combat stops and cinematic movement must not conflict.
+5. Ensure weapon selection remains operational during automatic movement.
+6. Preserve player health, ammunition, and weapon state.
+7. Ensure boss phase transitions cannot trigger more than once.
+8. Crowd spectators must not all become active AI agents.
+9. The arena must not collapse through uncontrolled physics.
+10. All transitions must have a clear beginning and ending state.
+11. The victory cinematic must trigger exactly once.
+12. The final exit movement must stop at the correct destination.
+
+### Performance
+
+The game runs inside a browser.
+
+Prioritize:
+- Instanced rendering.
+- Level of detail.
+- Environment streaming.
+- Shared assets.
+- Animation pooling.
+- Efficient lighting.
+- Limited particle systems.
+- Crowd animation optimization.
+- Audio source management.
+
+Target smooth performance on capable hardware.
+
+Provide scalable crowd density and visual quality settings.
+
+Do not sacrifice gameplay responsiveness to render unnecessary distant details.
+
+---
+
+# 13. IMPLEMENTATION PRIORITIES
+
+Implement the campaign in this order:
+
+### P0 — Automatic Movement Architecture
+- Create automatic movement controller.
+- Create waypoint routes.
+- Create combat stopping points.
+- Create automatic continuation after objectives.
+- Remove dependency on WASD navigation.
+- Preserve combat inputs.
+
+### P1 — Stage 1 and Stage 2
+- Build abandoned village.
+- Create village ending.
+- Implement creature tracking sequence.
+- Build cursed forest.
+- Add research laboratory.
+- Add lore documents.
+- Implement bunker ending.
+
+### P2 — Stage 3
+- Build underground facility.
+- Add research sections.
+- Implement lore revelation.
+- Add emergency alarm sequence.
+- Implement elevator descent.
+- Reveal arena.
+
+### P3 — Stage 4 Arena
+- Build circular arena.
+- Create spectator stands.
+- Add zombie crowd.
+- Introduce the King.
+- Implement boss introduction.
+
+### P4 — Four-Phase Boss
+- Implement Phase 1.
+- Implement Phase 2 crowd assistance.
+- Implement Phase 3 arena destruction.
+- Implement Final Phase silence and charge.
+- Integrate existing chase system.
+
+### P5 — Ending
+- Implement cinematic boss death.
+- Implement synchronized crowd collapse.
+- Implement automatic player exit.
+- Implement final victory screen.
+
+### P6 — Optimization and Testing
+- Test all automatic paths.
+- Test collisions.
+- Test transitions.
+- Test all boss phases.
+- Test crowd performance.
+- Test audio synchronization.
+- Test campaign restart.
+
+---
+
+# 14. ACCEPTANCE CRITERIA
+
+### Automatic Movement
+- [ ] Character walks automatically along predefined routes.
+- [ ] WASD is not required.
+- [ ] Combat encounters trigger automatic movement stops.
+- [ ] Player can aim and shoot while movement is controlled by the system.
+- [ ] Character resumes automatically after objectives.
+- [ ] No clipping or teleportation.
+- [ ] Boss chase sequences use automatic movement.
+
+### Stage 1
+- [ ] Abandoned village environment.
+- [ ] Signs of sudden evacuation.
+- [ ] Thin fog.
+- [ ] Siren ending.
+- [ ] Iron gate opens.
+- [ ] Distant creature appears.
+- [ ] Creature enters the forest.
+- [ ] FOLLOW THE CREATURE objective appears.
+- [ ] Automatic travel into Stage 2.
+
+### Stage 2
+- [ ] Dead forest environment.
+- [ ] Hanging corpse props.
+- [ ] Abandoned laboratory.
+- [ ] More aggressive zombies.
+- [ ] Subject Alpha documents.
+- [ ] Creature roar.
+- [ ] Ground vibration.
+- [ ] Giant footprints.
+- [ ] Bunker entrance.
+- [ ] Automatic travel into Stage 3.
+
+### Stage 3
+- [ ] Underground facility.
+- [ ] Narrow corridors.
+- [ ] Flickering lights.
+- [ ] Broken experiment tubes.
+- [ ] Mutated zombies.
+- [ ] Subject Alpha origin revelation.
+- [ ] Red emergency alarm.
+- [ ] Doors open.
+- [ ] Automatic elevator entry.
+- [ ] Cinematic elevator descent.
+- [ ] Arena revealed immediately after elevator doors open.
+
+### Stage 4
+- [ ] Large circular arena.
+- [ ] Damaged spectator stands.
+- [ ] Fire and environmental effects.
+- [ ] Large zombie audience.
+- [ ] Crowd reacts to the boss.
+- [ ] The King stands in the center.
+- [ ] Cinematic boss introduction.
+- [ ] Phase 1 works.
+- [ ] Phase 2 introduces additional enemies.
+- [ ] Phase 3 introduces arena hazards.
+- [ ] Final Phase triggers silence.
+- [ ] King performs final charge.
+- [ ] Player automatically escapes the charge.
+- [ ] Player can still fight and defeat the boss.
+
+### Ending
+- [ ] Boss death uses multiple camera angles.
+- [ ] All spectators stop moving.
+- [ ] Spectators collapse sequentially.
+- [ ] Arena becomes silent.
+- [ ] Player automatically exits through the gate.
+- [ ] Campaign completion screen appears.
+
+---
+
+# 15. FINAL INSTRUCTIONS
+
+This campaign must feel like one cohesive horror story.
+
+Do not treat each stage as a disconnected map.
+
+Environmental storytelling must communicate the history of the outbreak and the origin of Subject Alpha.
+
+The automatic movement system is mandatory.
+
+Do not replace it with WASD movement.
+
+The player controls combat, aiming, shooting, and weapon selection, while the game controls navigation, walking, running, and progression.
+
+Prioritize:
+1. Automatic movement reliability.
+2. Seamless environmental transitions.
+3. Story progression.
+4. Boss phase implementation.
+5. Zombie audience behavior.
+6. Browser performance.
+
+After implementation, provide:
+- Modified file list.
+- New scene and environment assets.
+- Implemented automatic movement routes.
+- Story event implementation.
+- Boss phase verification.
+- Crowd rendering strategy.
+- Performance observations.
+- Remaining bugs and incomplete features.
+
+Do not claim a stage is completed if its environment, objectives, movement path, and ending sequence are not functional.
+
+FINAL CREATIVE VISION:
+
+A cinematic four-stage horror survival campaign.
+
+The player begins in an abandoned village, follows a mysterious creature through a cursed forest, discovers the truth beneath an underground facility, and finally faces the King in a massive arena surrounded by thousands of infected spectators.
+
+The player does not navigate through WASD.
+
+The world carries the player forward through the story.
+
+The player survives through combat, weapon strategy, awareness, and timing.
+
+The final encounter must feel like a gladiator battle against the ruler of the undead.
