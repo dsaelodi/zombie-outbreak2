@@ -115,7 +115,6 @@ export class HUD implements IScreen {
   private storyCinFadeEl: HTMLElement | null = null;
 
   private cinematicMode: 'none' | 'boss_intro' | 'boss_death' | 'story' | 'outro' = 'none';
-  private chaseThirdPerson = false;
   private bossPhaseTransitionText: string | null = null;
   private loreActive = false;
   private elevatorCanSkip = false;
@@ -700,7 +699,6 @@ export class HUD implements IScreen {
           return;
         }
         this.cinematicMode = 'outro';
-        this.chaseThirdPerson = false;
         this.hudTopRowEl?.classList.add('hidden');
         this.hudBottomLeftEl?.classList.add('hidden');
         this.hudBottomRightEl?.classList.add('hidden');
@@ -805,26 +803,21 @@ export class HUD implements IScreen {
         this.hudBottomRightEl?.classList.remove('hidden');
         this.crosshairEl?.classList.remove('hidden');
       }),
-      this.events.on('boss:approach_state', ({ phase, label }) => {
-        this.chaseThirdPerson = phase === 'jump_prep' || phase === 'first_jump';
+      this.events.on('boss:approach_state', ({ label }) => {
         if (this.chaseBannerEl && label) {
           this.chaseBannerEl.classList.remove('hidden');
           this.chaseBannerEl.textContent = label;
           this.chaseBannerEl.style.borderColor = '#dc2626';
           this.chaseBannerEl.style.color = '#fecaca';
-        } else if (phase === 'done') {
-          this.chaseThirdPerson = false;
         }
       }),
-      this.events.on('chase:beat_changed', ({ name, cameraMode }) => {
-        this.chaseThirdPerson = cameraMode === 'BOSS_CHASE_CAMERA';
+      this.events.on('chase:beat_changed', ({ name }) => {
         if (this.chaseBannerEl && name) {
           this.chaseBannerEl.classList.remove('hidden');
           this.chaseBannerEl.textContent = name;
         }
       }),
       this.events.on('chase:state_changed', ({ active, phase, label }) => {
-        if (!active) this.chaseThirdPerson = false;
         if (!this.chaseBannerEl) return;
         this.chaseBannerEl.classList.toggle('hidden', !active);
         if (active) {
@@ -1087,7 +1080,6 @@ export class HUD implements IScreen {
       this.crosshairEl.classList.toggle(
         'hidden',
         this.cinematicMode !== 'none' ||
-          this.chaseThirdPerson ||
           snapshot.isTransitioning ||
           snapshot.weaponWheelOpen ||
           this.loreActive

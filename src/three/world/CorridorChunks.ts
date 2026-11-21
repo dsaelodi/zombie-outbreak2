@@ -117,9 +117,15 @@ export class CorridorChunks {
   private elevatorDoorLeft: THREE.Mesh | null = null;
   private elevatorDoorRight: THREE.Mesh | null = null;
   private elevatorShaftRibs: THREE.Group | null = null;
+  private elevatorInteriorLight: THREE.PointLight | null = null;
+  private elevatorEmergencyLight: THREE.PointLight | null = null;
+  private elevatorCeilingLamp: THREE.MeshStandardMaterial | null = null;
+  private elevatorSparkPoints: THREE.Points | null = null;
   private elevatorDescending = false;
   private elevatorSpeedFactor = 0;
   private elevatorRibOffset = 0;
+  private elevatorSparkCooldown = 0.8;
+  private elevatorSparkDuration = 0;
 
   // Dynamic lights adjusted by Z crossfade
   private hemiLight: THREE.HemisphereLight;
@@ -776,9 +782,17 @@ export class CorridorChunks {
     const wallGeo = this.tracker.geo(new THREE.BoxGeometry(1.4, 6.4, 158));
     const lWall = new THREE.Mesh(wallGeo, wallMat);
     lWall.position.set(-10.5, 3.2, -306);
-    const rWall = new THREE.Mesh(wallGeo, wallMat);
-    rWall.position.set(10.5, 3.2, -306);
-    this.root.add(lWall, rWall);
+    const rWallBeforeLift = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(1.4, 6.4, 4.7)),
+      wallMat
+    );
+    rWallBeforeLift.position.set(10.5, 3.2, -382.65);
+    const rWallAfterLift = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(1.4, 6.4, 152.4)),
+      wallMat
+    );
+    rWallAfterLift.position.set(10.5, 3.2, -303.2);
+    this.root.add(lWall, rWallBeforeLift, rWallAfterLift);
 
     // Ceiling Steel Ribs + Emergency Red Beacons along Wings A–E
     const ribMat = this.tracker.mat(new THREE.MeshStandardMaterial({ color: 0x1b2226, metalness: 0.65, roughness: 0.45 }));
@@ -881,10 +895,9 @@ export class CorridorChunks {
     this.addBloodDecal(2.6, -364, 4.4, 0.9);
     this.addBloodDecal(0.8, -370, 3.6, -0.3);
 
-    // Wing E Freight Elevator Bay (x = 5.4, z = -372.5) + Articulated Heavy King Model
+    // Paired Wing E freight elevator bay, aligned with the player lift at the corridor end.
     const freightGroup = new THREE.Group();
-    freightGroup.position.set(5.4, 0, -372.5);
-    freightGroup.rotation.y = -0.34;
+    freightGroup.position.set(6.8, 0, -382.3);
     this.root.add(freightGroup);
 
     const cageMat = this.tracker.mat(new THREE.MeshStandardMaterial({ color: 0x26292e, metalness: 0.8, roughness: 0.36 }));
@@ -893,37 +906,70 @@ export class CorridorChunks {
     this.kingElevBeaconMat = kWarnMat;
 
     // Freight lift bay frame
-    const fPostL = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.45, 5.4, 0.55)), frameSteelMat);
-    fPostL.position.set(-2.35, 2.7, 2.55);
-    const fPostR = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.45, 5.4, 0.55)), frameSteelMat);
-    fPostR.position.set(2.35, 2.7, 2.55);
-    const fHeader = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(5.2, 0.75, 0.65)), frameSteelMat);
-    fHeader.position.set(0, 5.3, 2.55);
+    const fPostL = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.4, 5.8, 0.65)), frameSteelMat);
+    fPostL.position.set(-2.65, 2.9, 3.05);
+    const fPostR = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.4, 5.8, 0.65)), frameSteelMat);
+    fPostR.position.set(2.65, 2.9, 3.05);
+    const fHeader = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(5.5, 0.8, 0.75)), frameSteelMat);
+    fHeader.position.set(0, 5.55, 3.05);
     const fBeacon = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(1.1, 0.22, 0.25)), kWarnMat);
-    fBeacon.position.set(0, 5.28, 2.92);
+    fBeacon.position.set(0, 5.55, 3.48);
     freightGroup.add(fPostL, fPostR, fHeader, fBeacon);
 
-    // Freight Sliding Hazard Doors
+    const doorPocket = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(0.1, 5.3, 0.86)),
+      this.tracker.mat(
+        new THREE.MeshStandardMaterial({ color: 0x090d10, metalness: 0.28, roughness: 0.72 })
+      )
+    );
+    doorPocket.position.set(4.35, 2.55, 2.46);
+    freightGroup.add(doorPocket);
+
+    // Heavy lift guide rails and overhead hoist housing.
+    const guideRailMat = this.tracker.mat(
+      new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.88, roughness: 0.28 })
+    );
+    for (const x of [-2.85, 2.85]) {
+      const guide = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.24, 16, 0.3)), guideRailMat);
+      guide.position.set(x, -3.2, -0.55);
+      const clamp = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.48, 0.34, 0.6)), frameSteelMat);
+      clamp.position.set(x, 4.35, -0.55);
+      freightGroup.add(guide, clamp);
+    }
+    const hoist = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(5.5, 0.48, 1.0)), cageMat);
+    hoist.position.set(0, 5.05, -0.2);
+    freightGroup.add(hoist);
+
+    // Freight sliding hazard doors.
     const kDoorMat = this.tracker.mat(new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.76, roughness: 0.38 }));
-    this.kingElevDoorLeft = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(2.15, 4.9, 0.22)), kDoorMat);
-    this.kingElevDoorLeft.position.set(-1.08, 2.45, 2.55);
-    this.kingElevDoorRight = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(2.15, 4.9, 0.22)), kDoorMat);
-    this.kingElevDoorRight.position.set(1.08, 2.45, 2.55);
+    this.kingElevDoorLeft = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(2.15, 5.0, 0.24)), kDoorMat);
+    this.kingElevDoorLeft.position.set(-1.08, 2.45, 2.46);
+    this.kingElevDoorRight = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(2.15, 5.0, 0.24)), kDoorMat);
+    this.kingElevDoorRight.position.set(1.08, 2.45, 2.46);
     freightGroup.add(this.kingElevDoorLeft, this.kingElevDoorRight);
 
-    // Moving Freight Lift Platform
+    // Moving freight lift cabin, sized for the King and aligned to the shared lift bank.
     const kPlatform = new THREE.Group();
-    const kpFloor = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(4.4, 0.28, 4.8)), cageMat);
-    kpFloor.position.set(0, -0.08, 0);
-    const kpBack = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(4.4, 5.0, 0.25)), cageMat);
-    kpBack.position.set(0, 2.42, -2.35);
-    const kpSideL = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.25, 5.0, 4.8)), cageMat);
-    kpSideL.position.set(-2.15, 2.42, 0);
-    const kpSideR = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.25, 5.0, 4.8)), cageMat);
-    kpSideR.position.set(2.15, 2.42, 0);
-    const kpLight = new THREE.PointLight(0xfbbf24, 15, 13, 1.4);
-    kpLight.position.set(0, 4.4, 0.3);
-    kPlatform.add(kpFloor, kpBack, kpSideL, kpSideR, kpLight);
+    const kpFloor = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(5.2, 0.3, 6.2)), cageMat);
+    kpFloor.position.set(0, -0.15, 0);
+    const kpRoof = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(5.2, 0.3, 6.2)), cageMat);
+    kpRoof.position.set(0, 5.0, 0);
+    const kpBack = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(5.2, 5.0, 0.25)), cageMat);
+    kpBack.position.set(0, 2.42, -3.0);
+    const kpSideL = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.25, 5.0, 6.2)), cageMat);
+    kpSideL.position.set(-2.48, 2.42, 0);
+    const kpSideR = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.25, 5.0, 6.2)), cageMat);
+    kpSideR.position.set(2.48, 2.42, 0);
+    const kpLight = new THREE.PointLight(0xfbbf24, 18, 15, 1.4);
+    kpLight.position.set(0, 4.55, -0.25);
+    const kpControl = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.18, 1.1, 0.12)), kWarnMat);
+    kpControl.position.set(-2.25, 1.8, 1.5);
+    const kpFloorStrip = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(5.2, 0.035, 0.12)),
+      kWarnMat
+    );
+    kpFloorStrip.position.set(0, 0.0175, 2.5);
+    kPlatform.add(kpFloor, kpRoof, kpBack, kpSideL, kpSideR, kpLight, kpControl, kpFloorStrip);
     freightGroup.add(kPlatform);
     this.kingElevPlatform = kPlatform;
     this.kingElevLight = kpLight;
@@ -1020,23 +1066,119 @@ export class CorridorChunks {
     // INDUSTRIAL ELEVATOR CHAMBER (z = -380 .. -388) — Grouped physically for smooth descent
     const playerCage = new THREE.Group();
     const elevFloor = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(7.2, 0.3, 7.2)), cageMat);
-    elevFloor.position.set(0, -0.1, -384);
+    elevFloor.position.set(0, -0.15, -384);
     const elevRoof = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(7.2, 0.3, 7.2)), cageMat);
     elevRoof.position.set(0, 4.4, -384);
-    const elevBack = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(7.2, 4.5, 0.3)), cageMat);
-    elevBack.position.set(0, 2.15, -387.5);
+    const elevBackGlassMat = this.tracker.mat(
+      new THREE.MeshPhysicalMaterial({
+        color: 0x9fc3ca,
+        metalness: 0.12,
+        roughness: 0.16,
+        transparent: true,
+        opacity: 0.24,
+        transmission: 0.72,
+        thickness: 0.08,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      })
+    );
+    const elevBackGlass = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(5.8, 3.35, 0.1)),
+      elevBackGlassMat
+    );
+    elevBackGlass.position.set(0, 2.2, -387.48);
+    const elevBackFrameL = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(0.55, 4.5, 0.3)),
+      frameSteelMat
+    );
+    elevBackFrameL.position.set(-3.325, 2.15, -387.5);
+    const elevBackFrameR = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(0.55, 4.5, 0.3)),
+      frameSteelMat
+    );
+    elevBackFrameR.position.set(3.325, 2.15, -387.5);
+    const elevBackTop = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(6.6, 0.58, 0.3)),
+      cageMat
+    );
+    elevBackTop.position.set(0, 4.15, -387.5);
+    const elevBackBottom = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(6.6, 0.52, 0.3)),
+      cageMat
+    );
+    elevBackBottom.position.set(0, 0.26, -387.5);
     const elevL = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.3, 4.5, 7.2)), cageMat);
     elevL.position.set(-3.55, 2.15, -384);
     const elevR = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.3, 4.5, 7.2)), cageMat);
     elevR.position.set(3.55, 2.15, -384);
-    const elevRail = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(6.6, 0.12, 0.12)), frameSteelMat);
-    elevRail.position.set(0, 1.05, -387.15);
+    const elevControl = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(0.16, 1.0, 0.12)),
+      frameSteelMat
+    );
+    elevControl.position.set(3.25, 1.85, -382.2);
+    const elevCeilingLampMat = this.tracker.mat(
+      new THREE.MeshStandardMaterial({
+        color: 0xfef08a,
+        emissive: 0xfde68a,
+        emissiveIntensity: 1.8,
+      })
+    );
+    const elevCeilingLight = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(2.4, 0.08, 0.32)),
+      elevCeilingLampMat
+    );
+    elevCeilingLight.position.set(0, 4.22, -383.0);
+    const elevFloorStripMat = this.tracker.mat(
+      new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.42, roughness: 0.48 })
+    );
+    const elevFloorStrip = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(6.0, 0.035, 0.12)),
+      elevFloorStripMat
+    );
+    elevFloorStrip.position.set(0, 0.0175, -381.1);
     const cageLight = new THREE.PointLight(0xfef08a, 15, 13, 1.4);
     cageLight.position.set(0, 3.9, -384);
-    playerCage.add(elevFloor, elevRoof, elevBack, elevL, elevR, elevRail, cageLight);
+    const emergencyLight = new THREE.PointLight(0xef4444, 0, 8, 1.8);
+    emergencyLight.position.set(3.05, 3.2, -382.2);
+    const sparkPositions = new Float32Array(18);
+    const sparkGeometry = this.tracker.geo(new THREE.BufferGeometry());
+    sparkGeometry.setAttribute('position', new THREE.BufferAttribute(sparkPositions, 3));
+    const sparkMaterial = this.tracker.mat(
+      new THREE.PointsMaterial({
+        color: 0xfff1a8,
+        size: 0.12,
+        transparent: true,
+        opacity: 0.95,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      })
+    );
+    const sparkPoints = new THREE.Points(sparkGeometry, sparkMaterial);
+    sparkPoints.position.set(3.05, 1.9, -382.18);
+    sparkPoints.visible = false;
+    playerCage.add(
+      elevFloor,
+      elevRoof,
+      elevBackGlass,
+      elevBackFrameL,
+      elevBackFrameR,
+      elevBackTop,
+      elevBackBottom,
+      elevL,
+      elevR,
+      elevControl,
+      elevCeilingLight,
+      elevFloorStrip,
+      cageLight,
+      emergencyLight,
+      sparkPoints
+    );
     this.root.add(playerCage);
     this.playerElevatorCage = playerCage;
-    this.pulseLights.push(cageLight);
+    this.elevatorInteriorLight = cageLight;
+    this.elevatorEmergencyLight = emergencyLight;
+    this.elevatorCeilingLamp = elevCeilingLampMat;
+    this.elevatorSparkPoints = sparkPoints;
 
     // Exterior Elevator Portal Frame & Sliding Doors at z = -380.4
     const portalL = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(0.55, 4.8, 0.6)), frameSteelMat);
@@ -1048,7 +1190,17 @@ export class CorridorChunks {
     this.root.add(portalL, portalR, portalTop);
 
     const elevDoorMat = this.tracker.mat(
-      new THREE.MeshStandardMaterial({ color: 0x3b424c, metalness: 0.78, roughness: 0.35 })
+      new THREE.MeshPhysicalMaterial({
+        color: 0x9fc3ca,
+        metalness: 0.16,
+        roughness: 0.14,
+        transparent: true,
+        opacity: 0.26,
+        transmission: 0.74,
+        thickness: 0.1,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      })
     );
     this.elevatorDoorLeft = new THREE.Mesh(this.tracker.geo(new THREE.BoxGeometry(3.4, 4.2, 0.25)), elevDoorMat);
     this.elevatorDoorLeft.position.set(-1.7, 2.1, -380.4);
@@ -1072,6 +1224,126 @@ export class CorridorChunks {
     }
     this.root.add(shaftGroup);
     this.elevatorShaftRibs = shaftGroup;
+
+    this.buildElevatorShaftDisplays();
+  }
+
+  private buildElevatorShaftDisplays(): void {
+    const tubeSpecs = [
+      { x: -4.8, z: -393, pose: 0, fluid: 0x10b981, scale: 0.88 },
+      { x: 4.8, z: -393, pose: 1, fluid: 0x0ea5e9, scale: 0.92 },
+      { x: -3.4, z: -402, pose: 2, fluid: 0x22c55e, scale: 1.0 },
+      { x: 3.6, z: -410, pose: 0, fluid: 0x0ea5e9, scale: 1.05 },
+    ] as const;
+    for (const spec of tubeSpecs) {
+      const tube = buildContainmentTube(this.tracker, {
+        x: spec.x,
+        z: spec.z,
+        poseVariant: spec.pose,
+        fluidColor: spec.fluid,
+        warningColor: spec.fluid,
+        scale: spec.scale,
+        labelSeed: Math.abs(spec.z),
+      });
+      this.root.add(tube.group);
+      this.containmentTubes.push(tube);
+    }
+
+    const shaftSteelMat = this.tracker.mat(
+      new THREE.MeshStandardMaterial({ color: 0x253139, metalness: 0.72, roughness: 0.44 })
+    );
+    const redIndicatorMat = this.tracker.mat(
+      new THREE.MeshStandardMaterial({
+        color: 0xef4444,
+        emissive: 0xdc2626,
+        emissiveIntensity: 1.8,
+      })
+    );
+    for (const z of [-391, -401, -411]) {
+      const beam = new THREE.Mesh(
+        this.tracker.geo(new THREE.BoxGeometry(19, 0.42, 0.48)),
+        shaftSteelMat
+      );
+      beam.position.set(0, 5.85, z);
+      this.root.add(beam);
+      for (const x of [-8.7, 8.7]) {
+        const rail = new THREE.Mesh(
+          this.tracker.geo(new THREE.BoxGeometry(0.3, 8.8, 0.3)),
+          shaftSteelMat
+        );
+        rail.position.set(x, 2.3, z);
+        const indicator = new THREE.Mesh(
+          this.tracker.geo(new THREE.BoxGeometry(0.42, 0.18, 0.16)),
+          redIndicatorMat
+        );
+        indicator.position.set(x * 0.92, 4.7, z + 0.25);
+        this.root.add(rail, indicator);
+      }
+    }
+
+    const fossilGroup = new THREE.Group();
+    fossilGroup.position.set(0, 0, -404);
+    const boneMat = this.tracker.mat(
+      new THREE.MeshStandardMaterial({ color: 0xa59a83, roughness: 0.82, metalness: 0.04 })
+    );
+    const displayMat = this.tracker.mat(
+      new THREE.MeshStandardMaterial({ color: 0x303940, roughness: 0.5, metalness: 0.68 })
+    );
+    const displayBase = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(3.8, 0.32, 1.8)),
+      displayMat
+    );
+    displayBase.position.y = 0.16;
+    fossilGroup.add(displayBase);
+
+    const spine = new THREE.Mesh(
+      this.tracker.geo(new THREE.CylinderGeometry(0.13, 0.18, 2.7, 8)),
+      boneMat
+    );
+    spine.rotation.x = Math.PI / 2;
+    spine.position.set(0, 1.22, -0.05);
+    fossilGroup.add(spine);
+    for (let i = 0; i < 6; i++) {
+      const vertebra = new THREE.Mesh(
+        this.tracker.geo(new THREE.DodecahedronGeometry(0.2, 0)),
+        boneMat
+      );
+      vertebra.position.set(0, 1.22, 0.92 - i * 0.38);
+      fossilGroup.add(vertebra);
+    }
+    for (let i = 0; i < 4; i++) {
+      const rib = new THREE.Mesh(
+        this.tracker.geo(new THREE.TorusGeometry(0.5 + i * 0.035, 0.065, 6, 14, Math.PI)),
+        boneMat
+      );
+      rib.position.set(0, 1.23, 0.55 - i * 0.34);
+      fossilGroup.add(rib);
+    }
+    const fossilSkull = new THREE.Mesh(
+      this.tracker.geo(new THREE.DodecahedronGeometry(0.52, 0)),
+      boneMat
+    );
+    fossilSkull.position.set(0, 1.4, -1.22);
+    fossilGroup.add(fossilSkull);
+
+    const displayGlass = new THREE.Mesh(
+      this.tracker.geo(new THREE.BoxGeometry(4.0, 3.2, 0.08)),
+      this.tracker.mat(
+        new THREE.MeshPhysicalMaterial({
+          color: 0x85aab1,
+          metalness: 0.08,
+          roughness: 0.18,
+          transparent: true,
+          opacity: 0.12,
+          transmission: 0.8,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        })
+      )
+    );
+    displayGlass.position.set(0, 1.75, 1.6);
+    fossilGroup.add(displayGlass);
+    this.root.add(fossilGroup);
   }
 
   // ==================== CONTROL HOOKS FOR STORY EVENTS ====================
@@ -1118,6 +1390,7 @@ export class CorridorChunks {
 
     const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
     const p = clamp01(phaseP);
+    const eased = p * p * (3 - 2 * p);
     const setDoors = (openP: number) => {
       const o = clamp01(openP);
       if (this.kingElevDoorLeft) this.kingElevDoorLeft.position.x = -1.08 - o * 2.05;
@@ -1146,13 +1419,13 @@ export class CorridorChunks {
 
     if (phase === 'approaching') {
       // King stomps heavily out from shattered chamber toward open threshold while freight doors open
-      setDoors(p);
+      setDoors(eased);
       if (this.kingElevPlatform) this.kingElevPlatform.position.y = 0;
       this.kingElevDescending = false;
       this.alphaKingGroup.position.set(
-        3.9 + (4.5 - 3.9) * p,
-        0,
-        -365.8 + (-369.6 + 365.8) * p
+        3.9 + (6.8 - 3.9) * eased,
+        -0.05,
+        -365.8 + (-378.99 + 365.8) * eased
       );
       this.alphaKingGroup.rotation.y = Math.PI - 0.38;
       setWalkGait(1.0);
@@ -1162,9 +1435,9 @@ export class CorridorChunks {
       if (this.kingElevPlatform) this.kingElevPlatform.position.y = 0;
       this.kingElevDescending = false;
       this.alphaKingGroup.position.set(
-        4.5 + (5.4 - 4.5) * p,
-        0,
-        -369.6 + (-372.4 + 369.6) * p
+        6.8,
+        -0.05,
+        -378.99 + (-382.3 + 378.99) * eased
       );
       this.alphaKingGroup.rotation.y = Math.PI - 0.34;
       setWalkGait(0.9);
@@ -1173,29 +1446,29 @@ export class CorridorChunks {
       setDoors(1);
       if (this.kingElevPlatform) this.kingElevPlatform.position.y = 0;
       this.kingElevDescending = false;
-      this.alphaKingGroup.position.set(5.4, 0, -372.4);
-      this.alphaKingGroup.rotation.y = (Math.PI - 0.34) * (1 - p) + -0.34 * p;
+      this.alphaKingGroup.position.set(6.8, -0.05, -382.3);
+      this.alphaKingGroup.rotation.y = (Math.PI - 0.34) * (1 - eased) + -0.34 * eased;
       setWalkGait(0);
       if (this.kingTorsoPivot) {
         this.kingTorsoPivot.position.y = 1.4 + Math.sin(elapsedSec * 2.2) * 0.04;
-        this.kingTorsoPivot.rotation.set(-0.08 * p, 0, 0);
+        this.kingTorsoPivot.rotation.set(-0.08 * eased, 0, 0);
       }
-      if (this.kingLeftArmPivot) this.kingLeftArmPivot.rotation.x = -0.85 - p * 1.15;
+      if (this.kingLeftArmPivot) this.kingLeftArmPivot.rotation.x = -0.85 - eased * 1.15;
     } else if (phase === 'closing') {
       // Doors slide shut smoothly after King is stationed inside
-      setDoors(1 - p);
+      setDoors(1 - eased);
       if (this.kingElevPlatform) this.kingElevPlatform.position.y = 0;
       this.kingElevDescending = false;
-      this.alphaKingGroup.position.set(5.4, 0, -372.4);
+      this.alphaKingGroup.position.set(6.8, -0.05, -382.3);
       this.alphaKingGroup.rotation.y = -0.34;
       setWalkGait(0);
     } else if (phase === 'descending') {
       // Freight cage + King physically drop down shaft
       setDoors(0);
       this.kingElevDescending = true;
-      const dropY = -p * 8.5;
+      const dropY = -eased * 8.5;
       if (this.kingElevPlatform) this.kingElevPlatform.position.y = dropY;
-      this.alphaKingGroup.position.set(5.4, dropY, -372.4);
+      this.alphaKingGroup.position.set(6.8, dropY - 0.05, -382.3);
       this.alphaKingGroup.rotation.y = -0.34;
       setWalkGait(0);
     }
@@ -1207,16 +1480,16 @@ export class CorridorChunks {
       this.setKingElevatorSequence(false, 'gone', 1, 0);
       return;
     }
-    if (v < 0.28) {
-      this.setKingElevatorSequence(true, 'approaching', v / 0.28, v * 5);
+    if (v < 0.36) {
+      this.setKingElevatorSequence(true, 'approaching', v / 0.36, v * 8.5);
     } else if (v < 0.56) {
-      this.setKingElevatorSequence(true, 'entering', (v - 0.28) / 0.28, v * 5);
-    } else if (v < 0.74) {
-      this.setKingElevatorSequence(true, 'positioned', (v - 0.56) / 0.18, v * 5);
-    } else if (v < 0.88) {
-      this.setKingElevatorSequence(true, 'closing', (v - 0.74) / 0.14, v * 5);
+      this.setKingElevatorSequence(true, 'entering', (v - 0.36) / 0.20, v * 8.5);
+    } else if (v < 0.69) {
+      this.setKingElevatorSequence(true, 'positioned', (v - 0.56) / 0.13, v * 8.5);
+    } else if (v < 0.82) {
+      this.setKingElevatorSequence(true, 'closing', (v - 0.69) / 0.13, v * 8.5);
     } else {
-      this.setKingElevatorSequence(true, 'descending', (v - 0.88) / 0.12, v * 5);
+      this.setKingElevatorSequence(true, 'descending', (v - 0.82) / 0.18, v * 8.5);
     }
   }
 
@@ -1352,6 +1625,47 @@ export class CorridorChunks {
     if (this.kingElevLight) {
       this.kingElevLight.color.setHex(this.kingElevDescending ? 0xef4444 : 0xfbbf24);
       this.kingElevLight.intensity = this.kingElevDescending ? 18 : 13;
+    }
+
+    const powerFault =
+      this.elevatorDescending &&
+      Math.sin(elapsedSec * 5.7 + Math.sin(elapsedSec * 1.3) * 2.1) > 0.9;
+    if (this.elevatorInteriorLight) {
+      this.elevatorInteriorLight.intensity = powerFault ? 1.2 : 12.5 + pulse * 2.4;
+    }
+    if (this.elevatorCeilingLamp) {
+      this.elevatorCeilingLamp.emissiveIntensity = powerFault ? 0.12 : 1.5 + pulse * 0.5;
+    }
+    if (this.elevatorEmergencyLight) {
+      this.elevatorEmergencyLight.intensity = this.elevatorDescending
+        ? powerFault
+          ? 5.2
+          : 0.5 + Math.max(0, Math.sin(elapsedSec * 3.2)) * 0.8
+        : 0;
+    }
+    if (this.elevatorSparkPoints) {
+      if (this.elevatorDescending) {
+        this.elevatorSparkDuration = Math.max(0, this.elevatorSparkDuration - dtSec);
+        if (this.elevatorSparkDuration === 0) {
+          this.elevatorSparkCooldown -= dtSec;
+          if (this.elevatorSparkCooldown <= 0) {
+            this.elevatorSparkDuration = 0.075;
+            this.elevatorSparkCooldown = 0.9 + Math.random() * 1.8;
+            const positions = this.elevatorSparkPoints.geometry.getAttribute('position') as THREE.BufferAttribute;
+            const values = positions.array as Float32Array;
+            for (let i = 0; i < values.length; i += 3) {
+              values[i] = (Math.random() - 0.5) * 0.22;
+              values[i + 1] = (Math.random() - 0.5) * 0.28;
+              values[i + 2] = (Math.random() - 0.5) * 0.16;
+            }
+            positions.needsUpdate = true;
+          }
+        }
+      } else {
+        this.elevatorSparkDuration = 0;
+        this.elevatorSparkCooldown = Math.max(this.elevatorSparkCooldown, 0.45);
+      }
+      this.elevatorSparkPoints.visible = this.elevatorSparkDuration > 0;
     }
 
     // Elevator shaft upward rib scroll during descent

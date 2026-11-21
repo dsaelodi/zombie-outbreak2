@@ -32,28 +32,35 @@ export class MissionBriefing implements IScreen {
 
     const stage = this.session.getCurrentStage();
     const mode = this.getControlMode();
+    const developerMode = import.meta.env.DEV;
 
     root.innerHTML = `
       <div class="screen-panel w-full max-w-4xl p-6 md:p-8 shadow-2xl">
+        ${
+          developerMode
+            ? '<div class="mb-4 border border-[#d97706]/35 bg-[#d97706]/10 px-3 py-2 text-[11px] font-mono-num font-bold uppercase tracking-[0.16em] text-[#fbbf24]">Developer Mode · All stages available</div>'
+            : ''
+        }
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4 mb-6">
           <div class="flex flex-wrap items-center gap-2">
             ${STAGES.map((s, idx) => {
               const unlocked = idx <= this.session.unlockedStageIndex;
               const active = idx === this.session.stageIndex;
+              const accessible = developerMode || unlocked;
               return `
                 <button
                   type="button"
                   data-stage="${idx}"
-                  ${unlocked ? '' : 'disabled'}
+                  ${accessible ? '' : 'disabled'}
                   class="px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider border transition-colors ${
                     active
                       ? 'bg-[#c92a2a] text-white border-[#c92a2a]'
-                      : unlocked
+                      : accessible
                       ? 'bg-white/[0.04] text-[#eceae4] border-white/15 hover:border-white/35'
                       : 'bg-white/[0.02] text-[#64748b] border-white/5 opacity-50 cursor-not-allowed'
                   }"
                 >
-                  Stage ${s.id}${unlocked ? '' : ' (Locked)'}
+                  Stage ${s.id} · ${s.name}${accessible ? '' : ' (Locked)'}
                 </button>
               `;
             }).join('')}
@@ -114,7 +121,8 @@ export class MissionBriefing implements IScreen {
       const stageBtn = target.closest('[data-stage]') as HTMLElement | null;
       if (stageBtn && stageBtn.dataset.stage !== undefined) {
         const idx = Number.parseInt(stageBtn.dataset.stage, 10);
-        if (idx <= this.session.unlockedStageIndex) {
+        const validStage = Number.isInteger(idx) && idx >= 0 && idx < STAGES.length;
+        if (validStage && (developerMode || idx <= this.session.unlockedStageIndex)) {
           void audioManager.play('ui_click');
           this.session.stageIndex = idx;
           this.render(container);

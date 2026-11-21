@@ -857,7 +857,18 @@ export class Game {
     this.cameraRig.setBasePosition(0, 1.68, -6);
     this.cameraRig.setBaseHeadingYaw(0);
     this.cameraRig.update(0.016);
-    this.autoMove.startArenaExitWalk(this.cameraRig, this.getAutoMoveCallbacks());
+    const exitObstacles = this.zombies
+      .filter((zombie) => zombie.root.visible && zombie.root.parent !== null)
+      .map((zombie) => ({
+        x: zombie.root.position.x,
+        z: zombie.root.position.z,
+        radius: zombie.variant === 'boss' ? 3.2 : 1,
+      }));
+    this.autoMove.startArenaExitWalk(
+      this.cameraRig,
+      this.getAutoMoveCallbacks(),
+      exitObstacles
+    );
   }
 
   private activatePhase2Encounter(): void {

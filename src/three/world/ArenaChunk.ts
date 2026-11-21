@@ -259,7 +259,6 @@ export class ArenaChunk {
     for (const [tx, tz, sc] of [
       [-4.2, -46.8, 1.1],
       [3.9, -47.2, 1.25],
-      [0.4, -49.5, 1.4],
     ]) {
       const pine = new THREE.Mesh(this.tGeo(new THREE.ConeGeometry(1.4 * sc, 5.2 * sc, 6)), extPineMat);
       pine.position.set(tx, 2.6 * sc, tz);

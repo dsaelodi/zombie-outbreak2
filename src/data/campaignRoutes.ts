@@ -120,7 +120,7 @@ export const LORE_DOCUMENTS: Record<string, LoreDocument> = {
     stageIndex: 2,
     locationLabel: 'Wing E · Subject Alpha Chamber',
     body: 'Alpha Chamber breached from the inside. Look through the shattered glass: The King has already descended to The Arena of the Dead.',
-    durationSec: 4.8,
+    durationSec: 8.5,
   },
 };
 
