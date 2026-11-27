@@ -1,0 +1,1106 @@
+# FINAL HORROR OVERHAUL
+## Zombie Survival FPS — Boss Phase 2, Horror Environment & Zombie Evolution
+
+### 1. GENERAL DEVELOPMENT INSTRUCTIONS
+
+Act as a Senior Game Developer, Horror Game Designer, 3D Character Artist, Gameplay Programmer, Animation Director, and Audio Engineer.
+
+Implement the following improvements in the existing zombie survival game.
+
+This is an incremental update, NOT a complete rebuild.
+
+Preserve all existing functionality, especially:
+- Four-stage campaign.
+- FPS perspective.
+- Webcam hand tracking.
+- Left-hand weapon wheel activation.
+- Right-hand weapon selection.
+- AR, SMG, Flamethrower, and Grenade.
+- Zombie weakness indicators.
+- Weapon damage and ammunition systems.
+- Existing boss Phase 1.
+- Multi-angle boss death cinematic.
+- Home screen showcase.
+- Existing audio and settings systems.
+
+First inspect the existing project and identify which systems, models, animations, and assets can be reused.
+
+Implement the actual gameplay systems. Do not create visual mockups or placeholder interactions.
+
+---
+
+# 2. DEMO TO HOME SCREEN TRANSITION
+
+Improve the transition between the gameplay showcase/demo and the main home screen.
+
+The transition must feel cinematic and atmospheric.
+
+### Sequence
+
+1. The gameplay demo plays normally.
+2. The demo reaches its ending point.
+3. The camera gradually transitions into darkness.
+4. The screen becomes completely black for a brief moment.
+5. The home screen environment begins appearing from darkness.
+6. Gradually increase environmental visibility and lighting.
+7. Reveal the zombies standing in the background.
+8. Reveal the game title.
+9. Finally reveal the main menu buttons.
+
+### Visual Direction
+
+Use a smooth cinematic fade transition.
+
+The screen must transition from dark to bright gradually, rather than suddenly flashing to full brightness.
+
+Add:
+- Smooth exposure adjustment.
+- Gradual environmental lighting.
+- Subtle fog reveal.
+- Atmospheric particles.
+- Slowly emerging zombie silhouettes.
+- Subtle ambient sound during the transition.
+
+The main menu should feel like the player has entered a dark, abandoned horror environment.
+
+### Technical Requirements
+
+- Prevent the demo and home screen audio from overlapping.
+- Avoid sudden camera position changes.
+- Prevent duplicate animation loops.
+- Ensure the transition can run repeatedly.
+- Maintain proper scene state management.
+- Avoid visible loading flashes or rendering glitches.
+
+---
+
+# 3. HOME SCREEN — STAGE 4 BOSS PHASE 2 SHOWCASE
+
+Upgrade the existing home screen animation.
+
+Add a special showcase sequence featuring the Stage 4 final boss, including its Phase 2 transformation and combat behavior.
+
+The purpose is to give players a preview of the final boss before starting the campaign.
+
+### Showcase Animation Sequence
+
+**SHOT 1 — BOSS PHASE 1 INTRODUCTION**
+
+Show the boss standing in a dark environment.
+
+Use a low-angle cinematic camera.
+
+Show its large body, disturbing anatomy, and intimidating silhouette.
+
+**SHOT 2 — TRANSFORMATION**
+
+The boss begins transforming into Phase 2.
+
+Add:
+- Body deformation.
+- Violent movement.
+- Disturbing creature animation.
+- Dark environmental effects.
+- Appropriate creature sounds.
+- Lighting changes.
+
+**SHOT 3 — PHASE 2 REVEAL**
+
+Reveal the boss in its more aggressive Phase 2 form.
+
+Use a close-up camera angle to emphasize its appearance.
+
+**SHOT 4 — JUMP ATTACK SHOWCASE**
+
+The boss performs a powerful jump toward the camera or a designated showcase target.
+
+Use a dramatic camera reaction.
+
+**SHOT 5 — FINAL SHOWCASE**
+
+Show the boss landing heavily and roaring.
+
+Transition back into the normal home screen composition.
+
+### Requirements
+
+- Use the actual Stage 4 boss model.
+- Reuse actual Phase 2 animations where possible.
+- Keep the showcase separate from the actual boss gameplay instance.
+- Do not trigger real combat logic in the home screen.
+- Make the sequence loop naturally.
+- Keep menu buttons readable.
+- Ensure the boss never attacks the menu or prevents player interaction.
+
+The showcase must feel like a cinematic horror trailer integrated into the home screen.
+
+---
+
+# 4. STAGE 4 BOSS — PHASE 2 CHASE SYSTEM
+
+This is the highest-priority gameplay feature.
+
+Upgrade the final boss encounter with a dedicated Phase 2 transformation and chase sequence.
+
+The boss should become much more aggressive and frightening after Phase 1.
+
+### 4.1 Phase 1 Completion
+
+When the boss reaches its Phase 1 defeat threshold:
+
+- Stop its current attack sequence.
+- Trigger a transformation animation.
+- Change its appearance into Phase 2.
+- Introduce a new Phase 2 health bar.
+- Change the music into a more intense boss soundtrack.
+- Trigger appropriate transformation sound effects.
+- Introduce a brief cinematic camera transition.
+
+IMPORTANT:
+
+Defeating Phase 1 must NOT immediately trigger the final victory screen.
+
+Phase 1 is only the first part of the boss encounter.
+
+The boss must transform and continue fighting in Phase 2.
+
+### 4.2 Phase 2 Movement
+
+The Phase 2 boss must have two main movement behaviors:
+
+**A. Aggressive Pursuit**
+
+The boss actively chases the player.
+
+Characteristics:
+- More aggressive movement.
+- Faster bursts of movement.
+- Heavy body animation.
+- Strong movement anticipation.
+- Distinct chase audio.
+- Periodic aggressive attacks.
+
+**B. Jump Attacks**
+
+The boss can jump toward the player's position.
+
+Requirements:
+- Use an actual jump animation.
+- Add anticipation before jumping.
+- Animate the boss leaving the ground.
+- Move it toward a calculated target position.
+- Add a heavy landing animation.
+- Trigger environmental impact effects.
+- Trigger camera shake when landing.
+
+The jump should feel powerful and dangerous.
+
+Do not make the boss teleport or instantly change positions.
+
+Use smooth movement and appropriate collision handling.
+
+### 4.3 Boss Jump Attack Sequence
+
+Suggested attack sequence:
+
+1. Boss identifies the player's current position.
+2. Boss prepares to jump.
+3. Play an anticipation animation.
+4. Play a distinctive warning sound.
+5. Boss jumps toward the player.
+6. Boss lands with a powerful impact.
+7. Trigger camera shake.
+8. Spawn dust and environmental particles.
+9. Boss immediately resumes pursuit if the player survives.
+
+The player must have a reasonable opportunity to react to the attack.
+
+Avoid unavoidable instant-kill jump attacks.
+
+### 4.4 Boss Phase 2 Difficulty
+
+The boss should remain threatening without becoming unfair.
+
+Use:
+- Faster movement bursts.
+- Longer jump range.
+- Aggressive pursuit.
+- Strong attacks.
+- More frequent attack opportunities.
+- Carefully timed recovery periods.
+
+Keep attacks readable through anticipation animations and sound cues.
+
+Its movement speed should be configurable.
+
+Phase 2 can be considerably more aggressive than Phase 1 without making all movement excessively fast.
+
+---
+
+# 5. AUTOMATIC PLAYER RUNNING — CHASE SEQUENCE
+
+Implement a dedicated automatic sprint system for the Stage 4 Phase 2 boss encounter.
+
+The player character must automatically run when the chase sequence begins.
+
+This is a SYSTEM-CONTROLLED RUNNING SEQUENCE.
+
+The player should not need to continuously hold a movement button to run.
+
+### 5.1 Automatic Running Behavior
+
+When the boss activates the Phase 2 chase:
+
+1. Trigger the player's running animation.
+2. Automatically move the player forward along a predefined chase route.
+3. Adjust player speed according to the chase sequence.
+4. Make the boss pursue the player.
+5. Coordinate the player's movement with the boss's movement.
+6. Continue the chase until the encounter reaches its next combat event.
+
+The running animation must be synchronized with actual player movement.
+
+Do not simply animate the legs while keeping the player stationary.
+
+### 5.2 Chase Gameplay
+
+Create a dynamic chase encounter between the boss and the player.
+
+The sequence should include:
+- Boss jumping behind the player.
+- Boss attempting to catch the player.
+- Heavy landing effects.
+- Environmental destruction where supported.
+- Camera movement that emphasizes the chase.
+- Intense music.
+- Appropriate running footsteps.
+- Boss growls and aggressive sounds.
+
+The player must remain in a first-person perspective.
+
+Do not permanently convert the gameplay into third-person.
+
+### 5.3 Player Interaction During Automatic Running
+
+While automatic running is active:
+
+- Keep the ability to aim.
+- Allow the player to shoot.
+- Preserve weapon switching.
+- Preserve the dual-hand weapon wheel controls.
+- Keep ammunition and health HUD visible.
+- Do not allow automatic running to interfere with weapon selection.
+
+Movement should be controlled by the system, while combat interaction remains available to the player.
+
+Where the existing movement system supports lateral dodging, preserve it.
+
+Do not introduce unnecessary new gesture controls.
+
+### 5.4 Chase Route
+
+Create a dedicated route for the boss chase sequence.
+
+Requirements:
+- Use predefined waypoints or a spline path.
+- Avoid walls and environmental obstacles.
+- Prevent the player from clipping through objects.
+- Maintain a reasonable distance between the player and the boss.
+- Synchronize boss jumps with the chase route.
+- Keep the camera stable and readable.
+- Provide appropriate collision handling.
+
+If the boss gets too close, trigger a controlled danger state or recovery behavior instead of allowing unpredictable clipping.
+
+### 5.5 Chase Sequence Completion
+
+The chase should lead into another combat opportunity.
+
+For example:
+- The boss performs a final jump.
+- The player escapes the immediate attack.
+- The boss becomes briefly vulnerable.
+- The player can attack its weak point.
+- The boss returns to its combat state.
+
+The player must eventually defeat the boss through actual gameplay.
+
+Do not make the chase sequence a permanently scripted animation with no meaningful combat interaction.
+
+---
+
+# 6. CAMERA SHAKE / IMPACT VIBRATION
+
+Add impactful camera shake whenever the Stage 4 boss performs an attack in both Phase 1 and Phase 2.
+
+The attacks must feel physically powerful.
+
+### Phase 1
+
+Add camera shake when:
+- Heavy boss attacks hit the ground.
+- Boss melee attacks connect.
+- Boss performs powerful environmental attacks.
+- Boss impacts nearby surfaces.
+
+### Phase 2
+
+Increase the intensity for:
+- Jump attacks.
+- Heavy landing impacts.
+- Ground slams.
+- Powerful chase attacks.
+- Environmental destruction.
+
+### Camera Shake Design
+
+Use:
+- Short impact shakes.
+- Controlled camera displacement.
+- Small rotational movement.
+- Different intensities based on attack type.
+- Smooth recovery after impact.
+
+Suggested initial intensity:
+
+| Event | Shake intensity |
+|---|---|
+| Phase 1 normal attack | Low |
+| Phase 1 heavy attack | Medium |
+| Phase 2 jump landing | High |
+| Phase 2 ground slam | Very high |
+
+Avoid continuous uncontrolled camera shaking.
+
+The camera must return smoothly to its original orientation.
+
+### Optional Device Vibration
+
+Where browser and hardware support it, add optional gamepad or device vibration.
+
+Requirements:
+- Check API availability.
+- Handle unsupported devices.
+- Provide a settings toggle.
+- Use short vibration patterns.
+- Do not make device vibration mandatory.
+
+The game must remain functional when physical vibration is unavailable.
+
+Add a camera shake intensity setting and respect reduced-motion preferences where applicable.
+
+---
+
+# 7. ZOMBIE VARIETY — ADD CRAWLING ZOMBIES
+
+Expand the enemy types.
+
+Introduce a new zombie category:
+
+CRAWLER ZOMBIE.
+
+The crawler must have a distinct low-profile body position and movement behavior.
+
+### Crawler Characteristics
+
+Appearance:
+- Moves close to the ground.
+- Uses its arms to drag its body.
+- Has damaged or abnormal legs.
+- Has a frightening body posture.
+- Can have exposed injuries and damaged clothing.
+
+Behavior:
+- Crawls toward the player.
+- Moves unpredictably.
+- Can approach through narrow spaces.
+- Uses low-position melee attacks.
+- Has unique attack and death animations.
+
+### Crawler Animation Requirements
+
+Implement:
+- Ground idle.
+- Crawling movement.
+- Accelerated crawling.
+- Attack preparation.
+- Ground attack.
+- Damage reaction.
+- Death.
+
+The animation must match the actual movement speed.
+
+Do not make the crawler slide across the ground.
+
+The arms, shoulders, torso, and legs must move naturally relative to the crawling animation.
+
+### Spawn Distribution
+
+Introduce Crawlers gradually throughout the campaign.
+
+Suggested distribution:
+
+Stage 1:
+A small number of Crawlers as surprise encounters.
+
+Stage 2:
+Introduce more Crawlers in dark areas and corners.
+
+Stage 3:
+Use Crawlers more frequently, including mixed zombie groups.
+
+Stage 4:
+Allow Crawlers to appear in supporting waves where appropriate.
+
+Do not overpopulate every stage with the same enemy type.
+
+Maintain enemy variety.
+
+---
+
+# 8. ZOMBIE MOVEMENT — REALISTIC LIMPS AND ABNORMAL GAITS
+
+Improve the movement animations of all zombie categories.
+
+The existing walking behavior looks too uniform.
+
+Make zombies walk with unnatural, asymmetric, and damaged body movement.
+
+### Required Movement Variations
+
+1. Limping with one damaged leg.
+2. Dragging one foot.
+3. Walking with an unstable torso.
+4. Walking with one arm hanging unnaturally.
+5. Uneven shoulder movement.
+6. Occasional body stumbling.
+7. Sudden posture corrections.
+8. Different walking speeds and rhythms.
+
+Each zombie should have a variation of movement based on its physical condition.
+
+### Animation Design
+
+Use:
+- Asymmetric gait cycles.
+- Uneven foot placement.
+- Slight torso rotation.
+- Different arm swing patterns.
+- Head instability.
+- Irregular movement timing.
+- Weight shifting.
+- Occasional stumbling.
+
+Avoid repetitive identical walking cycles across all enemies.
+
+The goal is to make the zombies feel physically damaged and disturbing.
+
+### Technical Requirements
+
+- Synchronize gait animation with movement velocity.
+- Preserve collision accuracy.
+- Avoid foot sliding.
+- Avoid leg movement that does not match ground contact.
+- Ensure abnormal movement does not break pathfinding.
+- Reuse animation variations where possible.
+
+---
+
+# 9. ZOMBIE CHARACTER REDESIGN — SEMI-REALISTIC HORROR
+
+Upgrade the zombie characters from simple low-poly figures into more detailed semi-realistic horror creatures.
+
+Maintain the existing artistic direction, but increase anatomical detail and visual quality.
+
+The target is:
+
+SEMI-REALISTIC STYLIZED HORROR.
+
+Do not make the models completely photorealistic or visually inconsistent with the current game.
+
+### 9.1 Character Appearance
+
+Introduce more disturbing anatomical variations.
+
+Examples:
+
+**Zombie Type A — Exposed Rib Cage**
+- Damaged chest area.
+- Visible rib cage structure.
+- Distorted torso proportions.
+- Torn clothing around the chest.
+
+**Zombie Type B — Missing Left Arm**
+- One missing arm.
+- Damaged shoulder area.
+- Asymmetric walking animation.
+- Different attack behavior.
+
+**Zombie Type C — Missing Right Arm**
+- Opposite arm missing.
+- Unbalanced posture.
+- Different idle animation.
+
+**Zombie Type D — Missing Leg**
+- Damaged leg structure.
+- Severe limp.
+- One-sided body movement.
+- Slower movement or crawling behavior.
+
+**Zombie Type E — Headless Zombie**
+- No visible head.
+- Damaged neck structure.
+- Distinct body silhouette.
+- Unique attack behavior.
+- Special idle and movement animations.
+
+**Zombie Type F — Crawling Mutant**
+- Abnormal body proportions.
+- Ground-based movement.
+- Distorted limb anatomy.
+- Aggressive crawling behavior.
+
+These should be modular character variations, not just different colors applied to the same model.
+
+### 9.2 Model Quality
+
+Improve:
+- Body proportions.
+- Anatomical structure.
+- Skin materials.
+- Clothing materials.
+- Surface damage.
+- Blood-stained details.
+- Torn fabric.
+- Damaged limbs.
+- Facial structure.
+- Normal and roughness maps where supported.
+
+The models should look more detailed when approached by the player.
+
+### 9.3 Randomized Zombie Variants
+
+Create a configurable zombie variation system.
+
+Randomize:
+- Zombie model variant.
+- Clothing.
+- Skin appearance.
+- Limb condition.
+- Damage appearance.
+- Walking animation.
+- Idle animation.
+
+Avoid spawning identical zombies repeatedly in the same group.
+
+Maintain visual and performance consistency.
+
+### 9.4 Gameplay Consistency
+
+Every visible physical variation must correspond to appropriate animations and collision behavior.
+
+Examples:
+- Missing-leg zombies should have a compatible movement style.
+- Crawlers should use ground-level collision and attack behavior.
+- Headless zombies should not depend on head-targeting behavior.
+- Missing-arm zombies should have modified attack animations.
+
+Do not let character geometry interfere with hit detection.
+
+---
+
+# 10. BLOOD IMPACT EFFECTS — BULLET HIT FEEDBACK
+
+Improve the visual and audio feedback whenever a bullet successfully hits a zombie.
+
+Every valid bullet impact on a zombie should produce appropriate blood impact effects.
+
+### 10.1 Visual Effects
+
+When a bullet hits a zombie:
+
+- Spawn a blood particle burst.
+- Add localized blood splatter.
+- Add a brief hit reaction.
+- Show blood particles moving away from the impact point.
+- Add temporary blood decals where supported.
+- Add appropriate blood effects based on impact location.
+
+The effect should be visible during combat without completely covering the enemy.
+
+### 10.2 Different Impact Locations
+
+Use different impact feedback depending on the hit location.
+
+Torso:
+- Blood impact particles.
+- Brief body reaction.
+
+Arms:
+- Localized blood splatter.
+- Arm reaction if animation supports it.
+
+Legs:
+- Localized blood effect.
+- Possible movement interruption or stagger.
+
+Head:
+- Stronger hit feedback.
+- Distinct impact audio and animation when supported.
+
+Special consideration:
+Headless zombies must not receive headshot feedback or rely on missing head hitboxes.
+
+### 10.3 Audio Effects
+
+Add a dedicated blood-impact sound effect.
+
+Every successful bullet hit must play an appropriate impact sound.
+
+Use controlled randomized variations to prevent audio repetition.
+
+The sound should be:
+- Short.
+- Responsive.
+- Synchronized with the visual impact.
+- Appropriate to the hit location.
+
+Use separate sound variations for:
+- Flesh impact.
+- Heavy body impact.
+- Armor impact.
+- Mutated body impact.
+
+Do not play blood impact sounds when bullets hit walls, floors, or other non-zombie objects.
+
+### 10.4 Performance
+
+Use particle pooling and reusable effects.
+
+Avoid creating unlimited blood particles or decals.
+
+Introduce configurable particle limits.
+
+Ensure the effects do not noticeably reduce FPS during large zombie waves.
+
+The blood effects should enhance combat feedback without obscuring enemy weaknesses or aiming.
+
+---
+
+# 11. ALL FOUR STAGES — DARK HORROR ENVIRONMENT OVERHAUL
+
+Increase the horror atmosphere throughout Stage 1, Stage 2, Stage 3, and Stage 4.
+
+All stages should become darker, more disturbing, and more detailed.
+
+### 11.1 Environmental Atmosphere
+
+Increase the presence of:
+- Dark environments.
+- Blood stains.
+- Red blood splatters.
+- Blood trails.
+- Blood smears.
+- Dark red wall stains.
+- Cobwebs and spider webs.
+- Dust particles.
+- Atmospheric fog.
+- Damaged structures.
+- Abandoned objects.
+- Environmental decay.
+
+### 11.2 Spider Web Placement
+
+Add visible spider webs throughout the environments.
+
+Place webs naturally in:
+- Building corners.
+- Ceiling corners.
+- Door frames.
+- Abandoned windows.
+- Broken furniture.
+- Dark corridors.
+- Pipes.
+- Abandoned rooms.
+- Unused industrial structures.
+
+Some webs should be visible close to the player's camera.
+
+Others should appear in distant environmental locations.
+
+Add subtle depth and lighting so webs can be recognized.
+
+Do not randomly place webs in the middle of important combat paths.
+
+### 11.3 Blood Distribution
+
+Introduce blood details throughout the environments.
+
+Examples:
+- Blood stains on walls.
+- Blood splatters near doorways.
+- Blood trails on floors.
+- Footprint-like blood marks where appropriate.
+- Dried blood around abandoned equipment.
+- Heavy blood marks near zombie encounter areas.
+
+Use variations in color and opacity.
+
+Avoid making everything bright red.
+
+The environment should look abandoned and frightening rather than artificially painted.
+
+### 11.4 Stage-Specific Horror Atmosphere
+
+**STAGE 1 — THE OUTBREAK**
+
+Create an abandoned urban environment.
+
+Add:
+- Darkened streets.
+- Damaged buildings.
+- Blood-stained walls.
+- Abandoned vehicles.
+- Broken streetlights.
+- Spider webs in buildings.
+- Scattered debris.
+- Dark environmental corners.
+
+Stage 1 should introduce horror without making visibility too difficult.
+
+**STAGE 2 — NO SAFE PLACE**
+
+Create a darker industrial environment.
+
+Add:
+- Rusted machinery.
+- Broken pipes.
+- Blood-covered industrial surfaces.
+- Hanging cobwebs.
+- Flickering lights.
+- Dark industrial corridors.
+- Environmental debris.
+- Disturbing abandoned work areas.
+
+**STAGE 3 — THE INFECTION**
+
+Create a deeply disturbing research or contamination environment.
+
+Add:
+- Dark research rooms.
+- Blood-stained laboratories.
+- Abandoned equipment.
+- Broken glass.
+- Damaged medical equipment.
+- Heavy spider webs.
+- Contaminated-looking surfaces.
+- Dark and foggy corridors.
+
+Use visual storytelling to suggest that something terrible happened in this facility.
+
+**STAGE 4 — THE FINAL ENCOUNTER**
+
+Create a frightening boss arena.
+
+Add:
+- Dark structures.
+- Heavy environmental damage.
+- Large blood stains.
+- Dark red environmental lighting.
+- Spider webs in abandoned sections.
+- Debris.
+- Atmospheric particles.
+- Distinct boss arena structures.
+
+During Phase 2, the environment should feel increasingly unstable and dangerous.
+
+Use environmental effects to emphasize the boss's powerful movements.
+
+### 11.5 Lighting
+
+Make the environments considerably darker while preserving combat readability.
+
+Use:
+- Reduced ambient lighting.
+- Strategic localized lights.
+- Red accent lighting.
+- Flickering lights.
+- Dark shadows.
+- Fog.
+- Controlled light contrast.
+
+Do not simply reduce overall brightness until the player can no longer see enemies.
+
+Weakness indicators must remain visible.
+
+The player's weapon, important objectives, and nearby enemies must remain readable.
+
+---
+
+# 12. AUDIO INTEGRATION
+
+Synchronize the new animations and environmental effects with detailed sound design.
+
+Required new audio:
+
+### Boss
+- Phase 2 transformation.
+- Heavy breathing.
+- Jump preparation.
+- Airborne movement.
+- Landing impact.
+- Aggressive chase vocals.
+- Ground slam.
+- Phase 2 attack sounds.
+
+### Zombies
+- Crawling movement.
+- Dragging limbs.
+- Irregular footsteps.
+- Different breathing patterns.
+- Distinct attack sounds.
+- Hit reactions.
+- Zombie death sounds.
+
+### Weapon Impact
+- Flesh impact.
+- Blood impact.
+- Armor impact.
+- Mutated body impact.
+- Appropriate directional positioning.
+
+### Environment
+- Distant environmental creaks.
+- Wind.
+- Spider web or environmental interaction sounds where appropriate.
+- Distant zombie groans.
+- Heavy debris movement.
+- Unsettling ambience.
+
+Use original or appropriately licensed audio assets.
+
+Synchronize sound with animation events.
+
+Avoid excessive overlapping sounds.
+
+---
+
+# 13. TECHNICAL IMPLEMENTATION
+
+Before modifying the code:
+
+1. Inspect the current project architecture.
+2. Locate the Stage 4 boss controller.
+3. Locate the existing Phase 1 logic.
+4. Locate the player movement system.
+5. Locate the current animation controller.
+6. Locate zombie models and animation assets.
+7. Locate bullet collision and damage handling.
+8. Locate environmental scene configuration.
+9. Locate the home screen showcase logic.
+10. Locate the audio management system.
+
+Reuse existing components where possible.
+
+Suggested system separation:
+
+- BossPhaseController
+- BossChaseController
+- BossJumpController
+- AutomaticSprintController
+- CinematicCameraController
+- ImpactShakeController
+- ZombieVariantManager
+- ZombieLocomotionController
+- ZombieDamageEffectController
+- BloodParticleController
+- StageEnvironmentController
+- DemoTransitionController
+- HomeScreenShowcaseController
+
+Adapt the names to the existing architecture.
+
+### Important State Management
+
+Avoid conflicting states.
+
+The following states should be handled explicitly:
+
+- Main Menu.
+- Demo Showcase.
+- Stage Gameplay.
+- Boss Phase 1.
+- Boss Transformation.
+- Boss Phase 2.
+- Automatic Chase.
+- Boss Death Cinematic.
+- Campaign Victory.
+
+Ensure that:
+- Boss death cannot trigger during transformation.
+- Phase 2 does not accidentally restart Phase 1.
+- Automatic sprint stops correctly.
+- Cinematic cameras restore the original FPS camera.
+- Home screen showcase never activates gameplay AI.
+- Blood effects are properly cleaned up.
+- Audio tracks stop and transition correctly.
+
+### Performance
+
+- Use pooled blood particles.
+- Optimize zombie animation updates.
+- Use reusable zombie models.
+- Limit expensive transparent effects.
+- Optimize environmental meshes.
+- Avoid excessive real-time shadows.
+- Optimize camera and post-processing effects.
+- Prevent duplicate animation instances.
+- Prevent memory leaks.
+
+Target approximately 60 FPS on capable hardware and provide graceful degradation on lower-end hardware.
+
+---
+
+# 14. IMPLEMENTATION PRIORITIES
+
+Implement in this order:
+
+### P0 — Stage 4 Boss Phase 2
+- Phase 1 transformation.
+- Phase 2 model and animation.
+- Jump attack.
+- Boss pursuit.
+- Automatic player running.
+- Boss attack camera shake.
+- Final combat opportunity.
+
+### P0 — Boss Gameplay Testing
+- Test collision.
+- Test jump trajectory.
+- Test chase route.
+- Test automatic sprint.
+- Test player combat input during chase.
+- Test Phase 2 health and damage.
+- Test final defeat.
+
+### P1 — Zombie Remodeling
+- Semi-realistic normal zombies.
+- Crawling zombies.
+- Missing-limb variants.
+- Headless variants.
+- Exposed rib cage variants.
+- Limping and abnormal locomotion.
+
+### P1 — Blood Hit Effects
+- Blood particles.
+- Localized impact effects.
+- Hit reactions.
+- Flesh impact audio.
+- Performance optimization.
+
+### P2 — Horror Environment
+- Darker lighting.
+- Blood distribution.
+- Cobweb placement.
+- Environmental storytelling.
+- Stage-specific atmosphere.
+
+### P2 — Home Screen
+- Demo-to-menu transition.
+- Boss Phase 2 showcase.
+- Lighting reveal.
+- Showcase loop integration.
+
+### P3 — Final Polish
+- Audio synchronization.
+- Performance optimization.
+- Animation refinements.
+- Gameplay regression testing.
+
+---
+
+# 15. ACCEPTANCE CRITERIA
+
+### Demo and Home Screen
+- [ ] Demo transitions into darkness.
+- [ ] Home screen gradually appears from darkness.
+- [ ] No sudden brightness flash.
+- [ ] Stage 4 boss Phase 2 is shown in the home screen showcase.
+- [ ] Showcase loops correctly.
+- [ ] No gameplay AI is activated in the menu.
+
+### Stage 4 Boss
+- [ ] Phase 1 transitions into Phase 2.
+- [ ] Phase 2 has a functional health bar.
+- [ ] Boss performs jump attacks.
+- [ ] Boss actively chases the player.
+- [ ] Boss does not teleport.
+- [ ] Jump attacks have readable anticipation.
+- [ ] Boss landing generates impact effects.
+- [ ] Boss attack sequences trigger camera shake.
+- [ ] Player remains in FPS perspective.
+- [ ] Automatic running works.
+- [ ] Player can continue aiming and shooting.
+- [ ] Final boss defeat still triggers the existing multi-angle cinematic.
+
+### Zombie System
+- [ ] Crawling zombie works.
+- [ ] Different damaged limb variants exist.
+- [ ] Exposed rib cage variants exist.
+- [ ] Headless zombie works.
+- [ ] Zombies have more realistic limping animations.
+- [ ] Zombie movement matches actual movement speed.
+- [ ] Existing weakness systems remain intact.
+
+### Blood Effects
+- [ ] Bullet hits generate blood impact particles.
+- [ ] Blood effects match impact locations.
+- [ ] Successful zombie hits produce appropriate audio.
+- [ ] Non-zombie impacts do not produce zombie blood effects.
+- [ ] Blood effects do not create major performance issues.
+
+### Environments
+- [ ] All four stages have darker atmospheres.
+- [ ] Blood stains and splatters are distributed naturally.
+- [ ] Spider webs appear in appropriate locations.
+- [ ] Lighting preserves gameplay visibility.
+- [ ] Stage environments have distinct visual identities.
+
+---
+
+# 16. FINAL INSTRUCTIONS
+
+Do not implement everything as disconnected effects.
+
+All new systems must work together.
+
+The boss transformation must connect to the actual boss health system.
+
+The automatic chase must move the actual player character.
+
+The zombie damage effects must trigger from actual collision events.
+
+The new zombie anatomy must correspond to actual models and animations.
+
+The stage environment must preserve functional collision, pathfinding, and combat.
+
+The home screen showcase must reuse the actual boss appearance and animations without triggering gameplay logic.
+
+After implementation, provide:
+
+1. Summary of completed features.
+2. List of modified and created files.
+3. Boss Phase 2 implementation details.
+4. New zombie variants and animations.
+5. New environmental assets.
+6. Audio changes.
+7. Performance observations.
+8. Remaining bugs or incomplete features.
+
+Do not claim a feature is complete if it is only partially implemented.
+
+FINAL CREATIVE DIRECTION:
+
+Create a dark, semi-realistic stylized horror FPS where zombies move unnaturally, environments feel abandoned and blood-stained, every successful shot has satisfying visual and audio feedback, and Stage 4 culminates in a terrifying chase against a massive mutated boss.
+
+The player should feel hunted, pressured, and immersed in a genuine horror survival experience.

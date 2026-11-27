@@ -1,0 +1,9 @@
+{
+  "zombies": {
+    "basic": null,
+    "runner": null,
+    "boss": null
+  },
+  "weapon": null,
+  "environmentProps": null
+}
